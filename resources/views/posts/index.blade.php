@@ -12,7 +12,7 @@
                             <h5 class="card-title">{{$post->title}}</h5>
                             <p class="card-text">{{$post->body}}</p>
                             <small>{{$post->created_at->format('d.m.Y H:i:s')}}</small>
-                            <a href="/posts/{{$post->id}}" class="btn btn-primary ml-5">Читать полностью</a>
+                            <a href="{{route('post.show', $post->slug)}}" class="btn btn-primary ml-5">Читать полностью</a>
                         </div>
                     </div>
                 </div>

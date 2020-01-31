@@ -39,4 +39,9 @@ class Post extends Model
      * @var array
      */
     public $guarded = [];
+
+    public function getRouteKeyName()
+    {
+        return 'slug'; // db column name
+    }
 }
