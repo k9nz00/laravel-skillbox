@@ -12,3 +12,8 @@ npm-debug.log
 yarn-error.log
 .idea
 logs
+public/js/bootstrap.js
+public/js/bootstrap.js.map
+public/js/jquery.js
+public/js/popper.min.js
+public/css/bootstrap.min.css
