@@ -1,14 +1,21 @@
 <?php
 
 Route::get('/', 'MainController@index')->name('home');
-Route::get('/posts', 'Posts\PostController@index')->name('posts');
-Route::get('/posts/create', 'Posts\PostController@create')->name('post.create');
-Route::post('/posts', 'Posts\PostController@store');
-Route::get('/posts/{post}', 'Posts\PostController@show')->name('post.show');
 
+Route::get('/contacts', 'MainController@contacts')->name('contacts');
+Route::post('contacts', 'MainController@storeMessage')->name('message.store');
 
-//Route::get('/tasks/{id}', function ($id) {
-//    $task = Task::find($id);
-//    return view('tasks.show', compact('task'));
-//});
+Route::get('/about', 'MainController@about')->name('about');
 
+Route::get('/posts/create', 'Post\PostController@create')->name('post.create');
+Route::post('/posts', 'Post\PostController@store')->name('post.store');
+Route::get('/posts/{post}', 'Post\PostController@index')->name('post.show');
+
+$groupData = [
+    'namespace' => 'Admin',
+    'prefix'    => 'admin',
+];
+
+Route::group($groupData, function () {
+    Route::get('/', 'AdminController@index')->name('home.admin');
+});

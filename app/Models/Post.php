@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+
+
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -23,16 +25,13 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string $shortDescription
+ * @property int $publish
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post wherePublish($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereShortDescription($value)
  */
 class Post extends Model
 {
-//    /**
-//     * Поля с разрешенной массовой записью
-//     *
-//     * @var array
-//     */
-//    public $fillable = ['title', 'body'];
-
     /**
      * Поля защищенные от массовой записи
      *
@@ -42,6 +41,6 @@ class Post extends Model
 
     public function getRouteKeyName()
     {
-        return 'slug'; // db column name
+        return 'slug';
     }
 }
