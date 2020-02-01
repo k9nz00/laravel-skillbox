@@ -9,5 +9,12 @@ use Illuminate\Routing\Controller as BaseController;
 
 class Controller extends BaseController
 {
+    /**
+     * Название страницы
+     *
+     * @var $titlePage string
+     */
+    public $titlePage;
+
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 }

@@ -12,6 +12,11 @@ class AdminController extends Controller
     public function index()
     {
         $messages = Message::latest()->get();
-        return view('admin.index', compact('messages'));
+        $this->titlePage = 'Административный раздел';
+        $data = [
+            'messages'  => $messages,
+            'titlePage' => $this->titlePage,
+        ];
+        return view('admin.index', $data);
     }
 }

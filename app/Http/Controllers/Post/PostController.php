@@ -22,7 +22,11 @@ class PostController extends Controller
      */
     public function index(Post $post)
     {
-        return view('posts.show', compact('post'));
+        $data = [
+            'post'      => $post,
+            'titlePage' => $post->title,
+        ];
+        return view('posts.show', $data);
     }
 
     /**
@@ -32,7 +36,11 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('posts.create');
+        $this->titlePage = 'Создание новой статьи';
+        $data = [
+            'titlePage' => $this->titlePage,
+        ];
+        return view('posts.create', $data);
     }
 
     /**
@@ -45,9 +53,9 @@ class PostController extends Controller
     public function store(Request $request)
     {
         if ($request->method() == 'POST') {
-            if (isset($request->publish) && $request->publish == 'on' ){
+            if (isset($request->publish) && $request->publish == 'on') {
                 $request->publish = 1;
-            } else{
+            } else {
                 $request->publish = 0;
             }
 

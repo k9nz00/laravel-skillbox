@@ -16,7 +16,6 @@ class MainController extends Controller
 {
     public function index()
     {
-        //выводить опубликованные
         $posts = Post::latest()->get(['title', 'slug', 'shortDescription', 'created_at']);
         return view('mainPages.index', compact('posts'));
     }
@@ -28,7 +27,11 @@ class MainController extends Controller
      */
     public function contacts()
     {
-        return view('mainPages.contacts');
+        $this->titlePage = 'Контакты';
+        $data = [
+            'titlePage' => $this->titlePage,
+        ];
+        return view('mainPages.contacts', $data);
     }
 
     /**
@@ -38,7 +41,11 @@ class MainController extends Controller
      */
     public function about()
     {
-        return view('mainPages.about');
+        $this->titlePage = 'Страница о нас';
+        $data = [
+            'titlePage' => $this->titlePage,
+        ];
+        return view('mainPages.about', $data);
     }
 
     /**
