@@ -3,20 +3,32 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-
-use App\Models\Message;
-use Illuminate\Http\Request;
+use App\Models\Admin\Feedback;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\View\View;
 
 class AdminController extends Controller
 {
+    /**
+     * Главная страница админки
+     *
+     * @return Factory|View
+     */
     public function index()
     {
-        $messages = Message::latest()->get();
-        $this->titlePage = 'Административный раздел';
+        return view('admin.index');
+    }
+
+    /**
+     * Страница с обратной связтю от пользователей
+     *
+     * @return Factory|View
+     */
+    public function feedbacks(){
+        $messages = Feedback::latest()->get();
         $data = [
             'messages'  => $messages,
-            'titlePage' => $this->titlePage,
         ];
-        return view('admin.index', $data);
+        return view('admin.feedback.feedback', $data);
     }
 }

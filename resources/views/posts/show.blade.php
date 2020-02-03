@@ -1,7 +1,16 @@
+<?php  /** @var $post  App\Models\Post */ ?>
 @extends('layout.layout')
 
+@php
+    $title = $post->title;
+@endphp
+
+@section('title')
+    @include('layout.layoutsChunk.titlePage')
+@endsection
+
+
 @section('content')
-    <?php  /** @var $post  App\Models\Post */ ?>
     <div class="col-md-9 blog-main">
         <div class="blog-post">
             <h3 class="">{{$post->title}}</h3>

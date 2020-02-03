@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
     <link href="/css/style.css" rel="stylesheet">
     <link href="/css/bootstrap.min.css" rel="stylesheet">
-    <title>{{isset($titlePage) ? $titlePage : 'Laravel-learn главная'}}</title>
+    <title>@yield('title')</title>
 </head>
 <body>
 

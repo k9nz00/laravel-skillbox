@@ -22,7 +22,7 @@
                     <a class="nav-link" href="{{route('post.create')}}">Создать статью</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{route('home.admin')}}">Админ. раздел</a>
+                    <a class="nav-link" href="{{route('admin')}}">Админ. раздел</a>
                 </li>
             </ul>
         </div>

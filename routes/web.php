@@ -17,5 +17,7 @@ $groupData = [
 ];
 
 Route::group($groupData, function () {
-    Route::get('/', 'AdminController@index')->name('home.admin');
+    Route::get('/', 'AdminController@index')->name('admin');
+    Route::get('/feedbacks', 'AdminController@feedbacks')->name('admin.feedbacks');
+
 });

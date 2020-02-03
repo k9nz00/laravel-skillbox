@@ -1,4 +1,11 @@
 @extends('layout.layout')
+@php
+$title = 'Контакты';
+@endphp
+
+@section('title')
+    @include('layout.layoutsChunk.titlePage')
+@endsection
 
 @section('content')
     <div class="col-md-9 contacts">
@@ -30,7 +37,7 @@
                 <textarea
                         class="form-control"
                         id="inputMessage"
-                        name="message"
+                        name="feedback"
                         required
                         rows="3"></textarea>
             </div>

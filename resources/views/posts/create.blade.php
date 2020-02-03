@@ -1,4 +1,11 @@
 @extends('layout.layout')
+@php
+    $title = 'Создать статью';
+@endphp
+
+@section('title')
+    @include('layout.layoutsChunk.titlePage')
+@endsection
 
 @section('content')
     <div class="col-md-9 blog-main">
