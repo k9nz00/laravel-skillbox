@@ -12,3 +12,8 @@ npm-debug.log
 yarn-error.log
 .idea
 logs
+_ide_helper.php
+.phpstorm.meta.php
+composer.lock
+route.txt
+routeList.txt
