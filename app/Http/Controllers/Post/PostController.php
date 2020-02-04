@@ -20,10 +20,10 @@ class PostController extends Controller
      * @param Post $post
      * @return Factory|View
      */
-    public function index(Post $post)
+    public function show(Post $post)
     {
         $data = [
-            'post'      => $post,
+            'post' => $post,
         ];
         return view('posts.show', $data);
     }
@@ -47,12 +47,6 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        if (isset($request->publish) && $request->publish == 'on') {
-            $request->publish = 1;
-        } else {
-            $request->publish = 0;
-        }
-
         $validatedData = $this->validate($request, [
             'slug'             => 'required|alpha_dash|unique:posts,slug',
             'title'            => 'required|min:5|max:100',
@@ -60,13 +54,9 @@ class PostController extends Controller
             'body'             => 'required',
         ]);
 
-        Post::create([
-            'slug'             => Str::slug($validatedData['slug']),
-            'title'            => $validatedData['title'],
-            'shortDescription' => $validatedData['shortDescription'],
-            'body'             => $validatedData['body'],
-            'publish'          => $request->publish,
-        ]);
+        Post::create(array_merge($validatedData, [
+            'publish'          => (boolean)$request->publish,
+        ]));
         return redirect(route('home'));
     }
 }

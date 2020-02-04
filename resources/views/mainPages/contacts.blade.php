@@ -1,12 +1,6 @@
 @extends('layout.layout')
-@php
-$title = 'Контакты';
-@endphp
 
-@section('title')
-    @include('layout.layoutsChunk.titlePage')
-@endsection
-
+@section('title', 'Контакты')
 @section('content')
     <div class="col-md-9 contacts">
         <h2 class="alert alert-info">Добро пожаловать на этот учебный сайт.</h2>

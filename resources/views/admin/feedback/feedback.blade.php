@@ -1,12 +1,6 @@
 @extends('layout.layout')
 
-@php
-    $title = 'Обратная связь';
-@endphp
-
-@section('title')
-    @include('layout.layoutsChunk.titlePage')
-@endsection
+@section('title', 'Обратная связь')
 
 @section('content')
     <?php /** @var $message \App\Models\Admin\Feedback */ ?>

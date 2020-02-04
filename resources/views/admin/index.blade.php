@@ -1,12 +1,6 @@
 @extends('layout.layout')
 
-@php
-    $title = 'Административный раздел';
-@endphp
-
-@section('title')
-    @include('layout.layoutsChunk.titlePage')
-@endsection
+@section('title', 'Главная страница админки')
 
 @section('content')
     <div class="col-md-9 contacts">
