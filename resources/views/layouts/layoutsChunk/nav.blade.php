@@ -10,16 +10,16 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav m-auto text-center">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{route('home')}}">Главная</a>
+                    <a class="nav-link" href="{{route('post.index')}}">Все статьи</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{route('post.create')}}">Создать статью</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{route('about')}}">О нас</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{route('contacts')}}">Контакты</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{route('post.create')}}">Создать статью</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{route('admin')}}">Админ. раздел</a>

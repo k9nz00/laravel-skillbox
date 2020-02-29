@@ -1,4 +1,4 @@
-@extends('layout.layout')
+@extends('layouts.masterLayout')
 
 @section('title', 'Главная страница админки')
 

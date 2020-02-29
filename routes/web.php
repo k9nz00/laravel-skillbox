@@ -1,24 +1,20 @@
 <?php
 
 Route::get('/', 'MainController@index')->name('home');
-
 Route::get('/contacts', 'MainController@contacts')->name('contacts');
-Route::post('contacts', 'MainController@storeMessage')->name('message.store');
 Route::get('/about', 'MainController@about')->name('about');
+Route::post('contacts', 'MainController@storeMessageFromUser')->name('message.store');
 
+Route::resource('/post', 'Post\PostController');
 
-
-Route::get('/posts/create', 'Post\PostController@create')->name('post.create');
-Route::post('/posts', 'Post\PostController@store')->name('post.store');
-Route::get('/posts/{post}', 'Post\PostController@show')->name('post.show');
-
-$groupData = [
+$adminGroupDataProperty = [
     'namespace' => 'Admin',
     'prefix'    => 'admin',
 ];
 
-Route::group($groupData, function () {
+Route::group($adminGroupDataProperty, function () {
     Route::get('/', 'AdminController@index')->name('admin');
     Route::get('/feedbacks', 'AdminController@feedbacks')->name('admin.feedbacks');
 
 });
+Auth::routes();

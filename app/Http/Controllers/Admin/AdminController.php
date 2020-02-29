@@ -20,7 +20,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Страница с обратной связтю от пользователей
+     * Страница с обратной связью от пользователей
      *
      * @return Factory|View
      */

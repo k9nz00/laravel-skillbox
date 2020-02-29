@@ -14,14 +14,13 @@ use Illuminate\View\View;
 class MainController extends Controller
 {
     /**
-     * Главная страница сайта - вывод всех постов
+     * Главная страница сайта
      *
      * @return Factory|View
      */
     public function index()
     {
-        $posts = Post::latest()->get(['title', 'slug', 'shortDescription', 'created_at']);
-        return view('mainPages.index', compact('posts'));
+        return view('mainPages.home');
     }
 
     /**
@@ -51,7 +50,7 @@ class MainController extends Controller
      * @return RedirectResponse|Redirector
      * @throws ValidationException
      */
-    public function storeMessage(Request $request)
+    public function storeMessageFromUser(Request $request)
     {
         $validatedData = $this->validate($request, [
             'email'    => 'required|email',

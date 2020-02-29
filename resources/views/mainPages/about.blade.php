@@ -1,4 +1,4 @@
-@extends('layout.layout')
+@extends('layouts.masterLayout')
 
 @section('title', 'О нас')
 @section('content')

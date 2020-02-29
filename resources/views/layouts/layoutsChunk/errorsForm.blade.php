@@ -1,5 +1,5 @@
 <?php /** @var $errors Illuminate\Support\ViewErrorBag  */ ?>
-@if($errors->count())
+@if($errors->any())
     <div class="alert alert-danger">
         <ul>
             @foreach($errors->all() as $error)
