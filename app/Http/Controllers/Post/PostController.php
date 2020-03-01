@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Post;
 
+use App\Helpers\MessageHelpers;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
+use App\Models\Tag;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,7 +23,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::latest()->get(['title', 'slug', 'shortDescription', 'created_at']);
+        //разобраться как выбирать отпределеные столбцы поста + теги
+        $posts = Post::with('tags')->latest()->get();
         return view('post.list', compact('posts'));
     }
 
@@ -62,9 +65,21 @@ class PostController extends Controller
             'body'             => 'required',
         ]);
 
-        Post::create(array_merge($validatedData, [
+        $post = Post::create(array_merge($validatedData, [
             'publish' => (boolean)$request->publish,
         ]));
+
+        $tagsIds = [];
+        $tagsToAttach = explode(', ', $request->tags);
+        foreach ($tagsToAttach as $tagToAttach) {
+            $tagToAttach = Tag::firstOrCreate(['name' => $tagToAttach]);
+            $tagsIds[] = $tagToAttach->id;
+        }
+        $post->tags()->sync($tagsIds);
+
+        $messageAboutCreate = 'Статья '. $post->title . ' успешно создана';
+        MessageHelpers::flashMessage($messageAboutCreate);
+
         return redirect()->route('post.index');
     }
 
@@ -100,6 +115,26 @@ class PostController extends Controller
             'publish' => (boolean)$request->publish,
         ]));
 
+        $existTagsFromPost = $post->tags->keyBy('name');
+        $tagsForPost = collect(explode(', ', request('tags')))
+            ->keyBy(function ($item) {
+                return $item;
+            });
+        $tagsIdsForSync = $existTagsFromPost
+            ->intersectByKeys($tagsForPost)
+            ->pluck('id')
+            ->toArray();
+
+        $tagsToAttach = $tagsForPost->diffKeys($existTagsFromPost);
+        foreach ($tagsToAttach as $tagToAttach) {
+            $tagToAttach = Tag::firstOrCreate(['name' => $tagToAttach]);
+            $tagsIdsForSync[] = $tagToAttach->id;
+        }
+        $post->tags()->sync($tagsIdsForSync);
+
+        $messageAboutCreate = 'Статья '. $post->title . ' успешно обновлена';
+        MessageHelpers::flashMessage($messageAboutCreate, 'info');
+
         return redirect()->route('post.show', $post->slug);
     }
 
@@ -108,15 +143,17 @@ class PostController extends Controller
      *
      * @param Post $post
      * @return RedirectResponse
+     * @throws \Exception
      */
     public function destroy(Post $post)
     {
         if ($post->delete()) {
+            $messageAboutCreate = 'Статья '. $post->title . ' удалена';
+            MessageHelpers::flashMessage($messageAboutCreate, 'warning');
+
             return redirect(route('post.index'));
         } else {
             return back()->withErrors('Не удалось удалить статью');
         }
-
-
     }
 }

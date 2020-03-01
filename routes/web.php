@@ -5,7 +5,7 @@ Route::get('/contacts', 'MainController@contacts')->name('contacts');
 Route::get('/about', 'MainController@about')->name('about');
 Route::post('contacts', 'MainController@storeMessageFromUser')->name('message.store');
 
-Route::resource('/post', 'Post\PostController');
+Route::get('/posts/tags/{tag}', 'TagController@index')->name('tags.list');
 
 $adminGroupDataProperty = [
     'namespace' => 'Admin',
@@ -17,4 +17,6 @@ Route::group($adminGroupDataProperty, function () {
     Route::get('/feedbacks', 'AdminController@feedbacks')->name('admin.feedbacks');
 
 });
+
+Route::resource('/post', 'Post\PostController');
 Auth::routes();

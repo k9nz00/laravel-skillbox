@@ -16,10 +16,13 @@
 
 <div id="app">
     @include('layouts.layoutsChunk.nav')
+    @section('fleshMessage')
+        @include('layouts.layoutsChunk.flashMessage')
+    @show
     <main role="main" class="container">
         <div class="row">
-            @yield('content')
 
+            @yield('content')
 
             @section('aside')
                 @include('layouts.layoutsChunk.aside')

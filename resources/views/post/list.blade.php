@@ -8,15 +8,7 @@
         </h2>
         <?php /** @var $post App\Models\Post */ ?>
         @foreach($posts as $post)
-            <div class="blog-post">
-                <h4 class="article-title">{{$post->title}}</h4>
-                <p class="blog-post-meta">{{$post->created_at->longRelativeToNowDiffForHumans()}}
-
-                </p>
-                <p class="post-shortDescription">{{$post->shortDescription}}</p>
-                <a href="{{route('post.show', $post->slug)}}">Читать статью полностью</a>
-                <hr>
-            </div>
+            @include('post.chunks.post', ['post'=>$post])
         @endforeach
     </div>
 @endsection

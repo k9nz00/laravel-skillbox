@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
-
-
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * App\Models\Post
@@ -29,6 +28,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $publish
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post wherePublish($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereShortDescription($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
+ * @property-read int|null $tags_count
  */
 class Post extends Model
 {
@@ -42,5 +43,15 @@ class Post extends Model
     public function getRouteKeyName()
     {
         return 'slug';
+    }
+
+    /**
+     * Установка связи с таблицей теговТу
+     *
+     * @return BelongsToMany
+     */
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
     }
 }

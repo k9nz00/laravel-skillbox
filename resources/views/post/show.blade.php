@@ -9,6 +9,7 @@
             <h3 class="">{{$post->title}}</h3>
             <p class="blog-post-meta">{{$post->created_at->longRelativeDiffForHumans()}}</p>
             <p>{{$post->body}}</p>
+            @include('post.chunks.tags', ['tags'=>$post->tags])
         </div>
         <a href="{{route('post.index')}}" class="btn btn-outline-success">К списку статей</a>
         <div class="service-block mt-2">
