@@ -62,4 +62,15 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Проверка на админские права.
+     * Пока как заглушка пользователь с id=1 считается администратором
+     *
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        return $this->id == 1 ? true : false;
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\Post
@@ -30,6 +31,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereShortDescription($value)
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
  * @property-read int|null $tags_count
+ * @property int $owner_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereOwnerId($value)
  */
 class Post extends Model
 {
@@ -53,5 +56,14 @@ class Post extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    /**
+     * Проверка на наличие прав для редактирования статьи
+     */
+    public function isAccessToEdit()
+    {
+        //Авторизованный пользователь создатель или админ
+        return $this->id == Auth::id() || Auth::user()->isAdmin();
     }
 }

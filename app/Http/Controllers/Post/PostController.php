@@ -11,11 +11,24 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class PostController extends Controller
 {
+    /**
+     * PostController constructor.
+     */
+    public function __construct()
+    {
+        $this->middleware('auth',
+            [
+                //На весь контроллер действует middleWare, кроме методов index и show
+                'except' => ['index', 'show'],
+            ]);
+    }
+
     /**
      * Список всех постов
      *
@@ -42,7 +55,7 @@ class PostController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return Factory|View
+     * @return RedirectResponse|View
      */
     public function create()
     {
@@ -66,7 +79,8 @@ class PostController extends Controller
         ]);
 
         $post = Post::create(array_merge($validatedData, [
-            'publish' => (boolean)$request->publish,
+            'publish'  => (boolean)$request->publish,
+            'owner_id' => Auth::id(),
         ]));
 
         $tagsIds = [];
@@ -77,7 +91,7 @@ class PostController extends Controller
         }
         $post->tags()->sync($tagsIds);
 
-        $messageAboutCreate = 'Статья '. $post->title . ' успешно создана';
+        $messageAboutCreate = 'Статья ' . $post->title . ' успешно создана';
         MessageHelpers::flashMessage($messageAboutCreate);
 
         return redirect()->route('post.index');
@@ -91,6 +105,7 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
+        $this->authorize('update', $post);
         return view('post.edit', compact('post'));
     }
 
@@ -132,7 +147,7 @@ class PostController extends Controller
         }
         $post->tags()->sync($tagsIdsForSync);
 
-        $messageAboutCreate = 'Статья '. $post->title . ' успешно обновлена';
+        $messageAboutCreate = 'Статья ' . $post->title . ' успешно обновлена';
         MessageHelpers::flashMessage($messageAboutCreate, 'info');
 
         return redirect()->route('post.show', $post->slug);
@@ -147,8 +162,9 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        $this->authorize('update', $post);
         if ($post->delete()) {
-            $messageAboutCreate = 'Статья '. $post->title . ' удалена';
+            $messageAboutCreate = 'Статья ' . $post->title . ' удалена';
             MessageHelpers::flashMessage($messageAboutCreate, 'warning');
 
             return redirect(route('post.index'));
