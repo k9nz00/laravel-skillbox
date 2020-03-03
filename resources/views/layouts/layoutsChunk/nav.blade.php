@@ -24,7 +24,35 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{route('admin')}}">Админ. раздел</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/telescope">Telescope</a>
+                </li>
             </ul>
         </div>
+
+
+        @guest
+            <div class="register-action">
+                <a class="btn btn-sm btn-outline-secondary" href="{{ route('login') }}">Войти</a>
+                <a class="btn btn-sm btn-outline-secondary" href="{{ route('register') }}">Зарегистрироваться</a>
+            </div>
+        @else
+            <div class="user-menu">
+                <a id="navbarDropdown" class="btn btn-sm btn-outline-secondary dropdown-toggle" href="#"
+                   role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                    {{ Auth::user()->name }} <span class="caret"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="{{ route('logout') }}"
+                       onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">
+                        {{ __('Logout') }}
+                    </a>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        @csrf
+                    </form>
+                </div>
+            </div>
+        @endguest
     </nav>
 </div>

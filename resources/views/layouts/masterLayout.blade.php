@@ -6,7 +6,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{--scripts and styles--}}
-    <link rel="icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
     <script src="{{ asset('js/app.js') }}" defer></script>
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
@@ -15,7 +16,11 @@
 <body>
 
 <div id="app">
-    @include('layouts.layoutsChunk.nav')
+
+    @section('navBar')
+        @include('layouts.layoutsChunk.nav')
+    @show
+
     @section('fleshMessage')
         @include('layouts.layoutsChunk.flashMessage')
     @show
