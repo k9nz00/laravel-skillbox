@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\PostEvents\CreatePostEvent;
+use App\Events\PostEvents\DeletePostEvent;
+use App\Events\PostEvents\UpdatePostEvent;
+use App\Listeners\ChangePostStateListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -17,6 +21,15 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        CreatePostEvent::class =>[
+            ChangePostStateListener::class,
+        ],
+        UpdatePostEvent::class =>[
+            ChangePostStateListener::class,
+        ],
+        DeletePostEvent::class =>[
+            ChangePostStateListener::class,
         ],
     ];
 

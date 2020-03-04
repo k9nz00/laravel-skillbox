@@ -2,18 +2,24 @@
 
 namespace App\Http\Controllers\Post;
 
+use App\Events\PostEvents\AbstractPostEvent;
+use App\Events\PostEvents\CreatePostEvent;
+use App\Events\PostEvents\DeletePostEvent;
+use App\Events\PostEvents\UpdatePostEvent;
 use App\Helpers\MessageHelpers;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\Tag;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\Auth;
+use Auth;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Gate;
 
 class PostController extends Controller
 {
@@ -83,6 +89,8 @@ class PostController extends Controller
             'owner_id' => Auth::id(),
         ]));
 
+        event(new CreatePostEvent($post));
+
         $tagsIds = [];
         $tagsToAttach = explode(', ', $request->tags);
         foreach ($tagsToAttach as $tagToAttach) {
@@ -102,10 +110,11 @@ class PostController extends Controller
      *
      * @param Post $post
      * @return Factory|View
+     * @throws AuthorizationException
      */
     public function edit(Post $post)
     {
-        $this->authorize('update', $post);
+        Gate::authorize('update', $post);
         return view('post.edit', compact('post'));
     }
 
@@ -129,6 +138,8 @@ class PostController extends Controller
         $post->update(array_merge($validatedData, [
             'publish' => (boolean)$request->publish,
         ]));
+
+        event(new UpdatePostEvent($post));
 
         $existTagsFromPost = $post->tags->keyBy('name');
         $tagsForPost = collect(explode(', ', request('tags')))
@@ -166,6 +177,7 @@ class PostController extends Controller
         if ($post->delete()) {
             $messageAboutCreate = 'Статья ' . $post->title . ' удалена';
             MessageHelpers::flashMessage($messageAboutCreate, 'warning');
+            event(new DeletePostEvent($post));
 
             return redirect(route('post.index'));
         } else {

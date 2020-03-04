@@ -2,7 +2,10 @@
 
 namespace App;
 
+use App\Models\Post;
+use Auth;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -31,6 +34,8 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Post[] $posts
+ * @property-read int|null $posts_count
  */
 class User extends Authenticatable
 {
@@ -72,5 +77,13 @@ class User extends Authenticatable
     public function isAdmin()
     {
         return $this->id == 1 ? true : false;
+    }
+
+    /**
+     * Посты пользователя
+     * @return HasMany
+     */
+    public function posts(){
+        return $this->hasMany(Post::class, 'owner_id');
     }
 }

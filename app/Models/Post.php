@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
 
@@ -33,6 +35,8 @@ use Illuminate\Support\Facades\Auth;
  * @property-read int|null $tags_count
  * @property int $owner_id
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereOwnerId($value)
+ * @property-read \App\User $users
+ * @property-read \App\User $user
  */
 class Post extends Model
 {
@@ -49,7 +53,7 @@ class Post extends Model
     }
 
     /**
-     * Установка связи с таблицей теговТу
+     * Установка связи с таблицей тегов
      *
      * @return BelongsToMany
      */
@@ -60,10 +64,18 @@ class Post extends Model
 
     /**
      * Проверка на наличие прав для редактирования статьи
+     * @param User $user
+     * @return bool
      */
-    public function isAccessToEdit()
+    public function isAccessToEdit(?User $user)
     {
-        //Авторизованный пользователь создатель или админ
-        return $this->id == Auth::id() || Auth::user()->isAdmin();
+        $access = false;
+        if (isset($user)){
+            if ($this->owner_id == $user->id || $user->isAdmin()) {
+                $access = true;
+            }
+        }
+
+        return $access;
     }
 }
