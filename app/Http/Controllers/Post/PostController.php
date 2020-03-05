@@ -48,7 +48,7 @@ class PostController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Показ одной статьи
      *
      * @param Post $post
      * @return Factory|View
