@@ -101,7 +101,7 @@ class PostController extends Controller
         $messageAboutCreate = 'Статья ' . $post->title . ' успешно создана';
         MessageHelpers::flashMessage($messageAboutCreate);
 
-        return redirect()->route('post.index');
+        return redirect()->route('posts.index');
     }
 
     /**
@@ -158,7 +158,7 @@ class PostController extends Controller
         $messageAboutCreate = 'Статья ' . $post->title . ' успешно обновлена';
         MessageHelpers::flashMessage($messageAboutCreate, 'info');
 
-        return redirect()->route('post.show', $post->slug);
+        return redirect()->route('posts.show', $post->slug);
     }
 
     /**
@@ -180,7 +180,7 @@ class PostController extends Controller
             User::getAdmin()->notify(new ChangePostStateNotification($post, $subjectMessage,
                 ChangePostStateNotification::POST_TYPE_STATUS_DELETE));
 
-            return redirect(route('post.index'));
+            return redirect(route('posts.index'));
         } else {
             return back()->withErrors('Не удалось удалить статью');
         }

@@ -9,7 +9,7 @@
         @include('layouts.layoutsChunk.errorsForm')
 
         <h3>Редактирование статьи {{$post->title}}</h3>
-        <form action="{{route('post.update', $post->slug)}}" method="post">
+        <form action="{{route('posts.update', $post->slug)}}" method="post">
             @csrf
             @method('PATCH')
             @include('post.chunks.formArticle', ['post' => $post])

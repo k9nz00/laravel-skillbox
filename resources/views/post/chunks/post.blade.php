@@ -8,7 +8,7 @@
         </p>
         <p class="post-shortDescription">{{$post->shortDescription}}</p>
         @include('post.chunks.tags', ['tags'=>$post->tags])
-        <a href="{{route('post.show', $post->slug)}}">Читать статью полностью</a>
+        <a href="{{route('posts.show', $post->slug)}}">Читать статью полностью</a>
         <hr>
     </div>
 @endif

@@ -7,7 +7,7 @@
 
         @include('layouts.layoutsChunk.errorsForm')
         <h3>Создание статьи</h3>
-        <form action="{{route('post.store')}}" method="post">
+        <form action="{{route('posts.store')}}" method="post">
             @csrf
             @include('post.chunks.formArticle')
 

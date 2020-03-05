@@ -24,7 +24,7 @@ class AdminController extends Controller
      *
      * @return Factory|View
      */
-    public function feedbacks(){
+    public function feedback(){
         $messages = Feedback::latest()->get();
         $data = [
             'messages'  => $messages,

@@ -71,7 +71,7 @@ class ChangePostStateNotification extends Notification
             ->line('На сайте произошли изменения')
             ->line($this->subjectMessage);
         if ($this->postTypeStatus != self::POST_TYPE_STATUS_DELETE){
-            $mailMessage->action('Посмотреть статью', url()->route('post.show', $this->post->slug));
+            $mailMessage->action('Посмотреть статью', url()->route('posts.show', $this->post->slug));
         }
 
         return $mailMessage;

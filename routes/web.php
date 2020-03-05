@@ -14,9 +14,9 @@ $adminGroupDataProperty = [
 
 Route::group($adminGroupDataProperty, function () {
     Route::get('/', 'AdminController@index')->name('admin');
-    Route::get('/feedbacks', 'AdminController@feedbacks')->name('admin.feedbacks');
+    Route::get('/feedback', 'AdminController@feedback')->name('admin.feedback');
 
 });
 
-Route::resource('/post', 'Post\PostController');
+Route::resource('/posts', 'Post\PostController');
 Auth::routes();
