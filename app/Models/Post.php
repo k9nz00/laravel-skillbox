@@ -37,6 +37,7 @@ use Illuminate\Support\Facades\Auth;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereOwnerId($value)
  * @property-read \App\User $users
  * @property-read \App\User $user
+ * @property-read \App\User $owner
  */
 class Post extends Model
 {
@@ -63,6 +64,17 @@ class Post extends Model
     }
 
     /**
+     * Установка связи с таблицей пользователей.
+     * Позволяет получить создателя статьи
+     *
+     * @return BelongsTo
+     */
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    /**
      * Проверка на наличие прав для редактирования статьи
      * @param User $user
      * @return bool
@@ -70,12 +82,9 @@ class Post extends Model
     public function isAccessToEdit(?User $user)
     {
         $access = false;
-        if (isset($user)){
-            if ($this->owner_id == $user->id || $user->isAdmin()) {
-                $access = true;
-            }
+        if (isset($user) && ($this->owner_id == $user->id || $user->isAdmin())) {
+            $access = true;
         }
-
         return $access;
     }
 }

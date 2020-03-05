@@ -5,6 +5,9 @@ namespace App;
 use App\Models\Post;
 use Auth;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -22,19 +25,19 @@ use Illuminate\Notifications\Notifiable;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereEmailVerifiedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User wherePassword($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereRememberToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereUpdatedAt($value)
+ * @method static Builder|\App\User newModelQuery()
+ * @method static Builder|\App\User newQuery()
+ * @method static Builder|\App\User query()
+ * @method static Builder|\App\User whereCreatedAt($value)
+ * @method static Builder|\App\User whereEmail($value)
+ * @method static Builder|\App\User whereEmailVerifiedAt($value)
+ * @method static Builder|\App\User whereId($value)
+ * @method static Builder|\App\User whereName($value)
+ * @method static Builder|\App\User wherePassword($value)
+ * @method static Builder|\App\User whereRememberToken($value)
+ * @method static Builder|\App\User whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Post[] $posts
+ * @property-read Collection|\App\Models\Post[] $posts
  * @property-read int|null $posts_count
  */
 class User extends Authenticatable
@@ -47,7 +50,9 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name',
+        'email',
+        'password',
     ];
 
     /**
@@ -56,7 +61,8 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
     /**
@@ -80,10 +86,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Получить пользователя правами администраторов
+     * Пока будет возвращен один пользователь с id =1 .
+     * Позже переделать с использованием привелегий
+     * @return User
+     */
+    public static function getAdmin()
+    {
+        return User::findOrFail(1);
+    }
+
+    /**
      * Посты пользователя
      * @return HasMany
      */
-    public function posts(){
+    public function posts()
+    {
         return $this->hasMany(Post::class, 'owner_id');
     }
 }

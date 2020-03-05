@@ -22,15 +22,15 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        CreatePostEvent::class =>[
-            ChangePostStateListener::class,
-        ],
-        UpdatePostEvent::class =>[
-            ChangePostStateListener::class,
-        ],
-        DeletePostEvent::class =>[
-            ChangePostStateListener::class,
-        ],
+//        CreatePostEvent::class =>[
+//            ChangePostStateListener::class,
+//        ],
+//        UpdatePostEvent::class =>[
+//            ChangePostStateListener::class,
+//        ],
+//        DeletePostEvent::class =>[
+//            ChangePostStateListener::class,
+//        ],
     ];
 
     /**

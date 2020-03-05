@@ -2,19 +2,17 @@
 
 namespace App\Http\Controllers\Post;
 
-use App\Events\PostEvents\AbstractPostEvent;
-use App\Events\PostEvents\CreatePostEvent;
-use App\Events\PostEvents\DeletePostEvent;
-use App\Events\PostEvents\UpdatePostEvent;
 use App\Helpers\MessageHelpers;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Notifications\PostNotafication\ChangePostStateNotification;
+use App\User;
+use App\Validators\PostValidator;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
 use Auth;
 use Illuminate\Validation\ValidationException;
@@ -42,8 +40,11 @@ class PostController extends Controller
      */
     public function index()
     {
-        //разобраться как выбирать отпределеные столбцы поста + теги
-        $posts = Post::with('tags')->latest()->get();
+        $posts = Post::with([
+            'tags' => function ($query) {
+                $query->select('name');
+            },
+        ])->latest()->get(['title', 'slug', 'shortDescription', 'created_at']);
         return view('post.list', compact('posts'));
     }
 
@@ -59,7 +60,7 @@ class PostController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Страница создания статьи
      *
      * @return RedirectResponse|View
      */
@@ -72,24 +73,22 @@ class PostController extends Controller
      * Сохраняет новую статью
      *
      * @param Request $request
+     * @param PostValidator $postValidator
      * @return RedirectResponse|Redirector
      * @throws ValidationException
      */
-    public function store(Request $request)
+    public function store(Request $request, PostValidator $postValidator)
     {
-        $validatedData = $this->validate($request, [
-            'slug'             => 'required|alpha_dash|unique:posts,slug',
-            'title'            => 'required|min:5|max:100',
-            'shortDescription' => 'required|max:255',
-            'body'             => 'required',
-        ]);
-
+        $validatedData = $postValidator->postValidate($request, null);
         $post = Post::create(array_merge($validatedData, [
             'publish'  => (boolean)$request->publish,
             'owner_id' => Auth::id(),
         ]));
 
-        event(new CreatePostEvent($post));
+        $subjectMessage = 'Статья ' . $post->title . ' была создана';
+        //Отправка почного уведомления администратору сайта
+        User::getAdmin()->notify(new ChangePostStateNotification($post, $subjectMessage,
+            ChangePostStateNotification::POST_TYPE_STATUS_CREATE));
 
         $tagsIds = [];
         $tagsToAttach = explode(', ', $request->tags);
@@ -123,23 +122,21 @@ class PostController extends Controller
      *
      * @param Request $request
      * @param Post $post
+     * @param PostValidator $postValidator
      * @return RedirectResponse
      * @throws ValidationException
      */
-    public function update(Request $request, Post $post)
+    public function update(Request $request, Post $post, PostValidator $postValidator)
     {
-        $validatedData = $this->validate($request, [
-            'slug'             => 'required|alpha_dash',
-            'title'            => 'required|min:5|max:100',
-            'shortDescription' => 'required|max:255',
-            'body'             => 'required',
-        ]);
-
+        $validatedData = $postValidator->postValidate($request, $post);
         $post->update(array_merge($validatedData, [
             'publish' => (boolean)$request->publish,
         ]));
 
-        event(new UpdatePostEvent($post));
+        $subjectMessage = 'Статья ' . $post->title . ' была обновлена';
+        //Отправка почного уведомления администратору сайта
+        User::getAdmin()->notify(new ChangePostStateNotification($post, $subjectMessage,
+            ChangePostStateNotification::POST_TYPE_STATUS_UPDATE));
 
         $existTagsFromPost = $post->tags->keyBy('name');
         $tagsForPost = collect(explode(', ', request('tags')))
@@ -165,7 +162,7 @@ class PostController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Удаление статьи
      *
      * @param Post $post
      * @return RedirectResponse
@@ -177,7 +174,11 @@ class PostController extends Controller
         if ($post->delete()) {
             $messageAboutCreate = 'Статья ' . $post->title . ' удалена';
             MessageHelpers::flashMessage($messageAboutCreate, 'warning');
-            event(new DeletePostEvent($post));
+
+            $subjectMessage = 'Статья ' . $post->title . ' была удалена';
+            //Отправка почного уведомления администратору сайта
+            User::getAdmin()->notify(new ChangePostStateNotification($post, $subjectMessage,
+                ChangePostStateNotification::POST_TYPE_STATUS_DELETE));
 
             return redirect(route('post.index'));
         } else {
