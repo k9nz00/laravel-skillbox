@@ -1,4 +1,4 @@
-@extends('layout.layout')
+@extends('layouts.masterLayout')
 
 @section('title', 'Главная страница админки')
 
@@ -14,7 +14,7 @@
             <tbody>
             <tr>
                 <td>feedbacks</td>
-                <td><a href="{{route('admin.feedbacks')}}">{{route('admin.feedbacks')}}</a></td>
+                <td><a href="{{route('admin.feedback')}}">{{route('admin.feedback')}}</a></td>
             </tr>
             </tbody>
         </table>

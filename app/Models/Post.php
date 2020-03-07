@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-
-
+use App\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\Post
@@ -29,6 +31,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $publish
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post wherePublish($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereShortDescription($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
+ * @property-read int|null $tags_count
+ * @property int $owner_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereOwnerId($value)
+ * @property-read \App\User $users
+ * @property-read \App\User $user
+ * @property-read \App\User $owner
  */
 class Post extends Model
 {
@@ -42,5 +51,26 @@ class Post extends Model
     public function getRouteKeyName()
     {
         return 'slug';
+    }
+
+    /**
+     * Установка связи с таблицей тегов
+     *
+     * @return BelongsToMany
+     */
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
+
+    /**
+     * Установка связи с таблицей пользователей.
+     * Позволяет получить создателя статьи
+     *
+     * @return BelongsTo
+     */
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
     }
 }
