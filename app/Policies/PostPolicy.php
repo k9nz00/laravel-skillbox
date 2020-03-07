@@ -44,4 +44,19 @@ class PostPolicy
         return $this->baseAllowAccess($user, $post);
     }
 
+    /**
+     * Проверка на наличие прав для редактирования статьи
+     * @param Post $post
+     * @param User $user
+     * @return bool
+     */
+    public function isAccessToEdit(?User $user, Post $post)
+    {
+        $access = false;
+        if (isset($user) && ($post->owner_id == $user->id || $user->isAdmin())) {
+            $access = true;
+        }
+        return $access;
+    }
+
 }

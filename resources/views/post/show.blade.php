@@ -14,7 +14,7 @@
         <a href="{{route('posts.index')}}" class="btn btn-outline-success">К списку статей</a>
 
         {{--блок кнопок. Показывать только тем пользователям, у которых есть права на управление статьей--}}
-        @if($post->isAccessToEdit(Auth::user()))
+        @if(Gate::allows('isAccessToEdit',$post))
             <div class="service-block mt-2">
                 <a href="{{route('posts.edit', $post->slug)}}" class="btn btn-outline-primary">Редактировать статью</a>
                 @include('post.chunks.deleteArticle')

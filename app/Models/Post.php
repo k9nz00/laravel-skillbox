@@ -73,18 +73,4 @@ class Post extends Model
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
-
-    /**
-     * Проверка на наличие прав для редактирования статьи
-     * @param User $user
-     * @return bool
-     */
-    public function isAccessToEdit(?User $user)
-    {
-        $access = false;
-        if (isset($user) && ($this->owner_id == $user->id || $user->isAdmin())) {
-            $access = true;
-        }
-        return $access;
-    }
 }
