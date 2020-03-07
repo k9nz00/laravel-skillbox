@@ -4,18 +4,17 @@ namespace App\Http\Controllers\Post;
 
 use App\Helpers\MessageHelpers;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Post\StorePostRequest;
+use App\Http\Requests\Post\UpdatePostRequest;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Notifications\PostNotafication\ChangePostStateNotification;
 use App\User;
-use App\Validators\PostValidator;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Auth;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Gate;
 
@@ -72,16 +71,14 @@ class PostController extends Controller
     /**
      * Сохраняет новую статью
      *
-     * @param Request $request
-     * @param PostValidator $postValidator
+     * @param StorePostRequest $storePostRequest
      * @return RedirectResponse|Redirector
-     * @throws ValidationException
      */
-    public function store(Request $request, PostValidator $postValidator)
+    public function store(StorePostRequest $storePostRequest)
     {
-        $validatedData = $postValidator->postValidate($request, null);
+        $validatedData = $storePostRequest->validated();
         $post = Post::create(array_merge($validatedData, [
-            'publish'  => (boolean)$request->publish,
+            'publish'  => (boolean)$storePostRequest->publish,
             'owner_id' => Auth::id(),
         ]));
 
@@ -91,7 +88,7 @@ class PostController extends Controller
             ChangePostStateNotification::POST_TYPE_STATUS_CREATE));
 
         $tagsIds = [];
-        $tagsToAttach = explode(', ', $request->tags);
+        $tagsToAttach = explode(', ', $storePostRequest->tags);
         foreach ($tagsToAttach as $tagToAttach) {
             $tagToAttach = Tag::firstOrCreate(['name' => $tagToAttach]);
             $tagsIds[] = $tagToAttach->id;
@@ -120,17 +117,15 @@ class PostController extends Controller
     /**
      * Обновление статьи
      *
-     * @param Request $request
+     * @param UpdatePostRequest $updatePostRequest
      * @param Post $post
-     * @param PostValidator $postValidator
      * @return RedirectResponse
-     * @throws ValidationException
      */
-    public function update(Request $request, Post $post, PostValidator $postValidator)
+    public function update(UpdatePostRequest $updatePostRequest, Post $post)
     {
-        $validatedData = $postValidator->postValidate($request, $post);
+        $validatedData = $updatePostRequest->validated();
         $post->update(array_merge($validatedData, [
-            'publish' => (boolean)$request->publish,
+            'publish' => (boolean)$updatePostRequest->publish,
         ]));
 
         $subjectMessage = 'Статья ' . $post->title . ' была обновлена';

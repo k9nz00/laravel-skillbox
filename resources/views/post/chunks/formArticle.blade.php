@@ -15,7 +15,7 @@
            id="inputSlug"
            placeholder="Slug"
            value="{{old('slug', $post->slug)}}"
-           required>
+           >
 </div>
 <div class="form-group">
     <label for="inputTitle" class="field-label">
@@ -32,7 +32,7 @@
            id="inputTitle"
            placeholder="title"
            value="{{old('title', $post->title)}}"
-           required>
+           >
 </div>
 <div class="form-group">
     <label for="inputShortDescription" class="field-label">
@@ -49,7 +49,7 @@
            id="inputShortDescription"
            placeholder="inputShortDescription"
            value="{{old('shortDescription', $post->shortDescription)}}"
-           required>
+           >
 </div>
 <div class="form-group">
     <label for="inputBody" class="field-label">
