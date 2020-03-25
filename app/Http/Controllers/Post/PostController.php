@@ -10,6 +10,7 @@ use App\Models\Post;
 use App\Models\Tag;
 use App\Notifications\PostNotafication\ChangePostStateNotification;
 use App\User;
+use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
@@ -106,7 +107,6 @@ class PostController extends Controller
      *
      * @param Post $post
      * @return Factory|View
-     * @throws AuthorizationException
      */
     public function edit(Post $post)
     {
@@ -161,7 +161,7 @@ class PostController extends Controller
      *
      * @param Post $post
      * @return RedirectResponse
-     * @throws \Exception
+     * @throws Exception
      */
     public function destroy(Post $post)
     {

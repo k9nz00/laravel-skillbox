@@ -73,4 +73,23 @@ class Post extends Model
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
+
+    /**
+     * Публикация поста
+     * @param bool $publish
+     */
+    public function published($publish = true)
+    {
+        $this->update([
+            'publish' => $publish,
+        ]);
+    }
+
+    /**
+     * Снятие поста с пубикации
+     */
+    public function anPublished()
+    {
+        $this->published(false);
+    }
 }
