@@ -9,7 +9,7 @@
     <div class="container">
         <div class="row mt-2 mb-2">
             <div class="">
-                <a href="{{route('postsPanel.create')}}" class="btn btn-success">Создать пост</a>
+                <a href="{{route('admin.post.create')}}" class="btn btn-success">Создать пост</a>
             </div>
         </div>
     </div>

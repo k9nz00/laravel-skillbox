@@ -66,6 +66,8 @@
             name="body"
             rows="5">{{old('body', $post->body)}}</textarea>
 </div>
+
+@isAdmin
 <div class="form-group form-check">
     <input type="checkbox"
            class="form-check-input"
@@ -82,6 +84,8 @@
         </span>
     </label>
 </div>
+@endisAdmin
+
 <div class="form-group">
     <label class="form-check-label field-label" for="inputTags">
         <span>

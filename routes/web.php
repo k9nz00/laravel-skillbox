@@ -12,9 +12,6 @@ $adminGroupDataProperty = [
     'namespace' => 'Admin',
     'prefix'    => 'admin',
     'middleware' => ['auth' ,'admin']
-    //для доступа в админ.раздел пока руками добавляю запись в промежуточную
-    //таблицу role_user. Связывается id  user'a  и роль c id =1
-
 ];
 Route::group($adminGroupDataProperty, function () {
     Route::get('/', 'AdminController@index')->name('admin');
@@ -22,7 +19,15 @@ Route::group($adminGroupDataProperty, function () {
 
     Route::patch('/postsPanel/publish/{post}', 'Post\AdminPublishPostController@update');
     Route::delete('/postsPanel/publish/{post}', 'Post\AdminPublishPostController@destroy');
-    Route::resource('/postsPanel', 'Post\AdminPostController');
+
+    Route::group(['namespace'=>'Post'], function (){
+        Route::get('/posts', 'AdminPostController@index')->name('admin.posts.index');
+        Route::get('/posts/create', 'AdminPostController@create')->name('admin.post.create');
+        Route::post('/posts', 'AdminPostController@store')->name('admin.post.store');
+        Route::get('/posts/{post}/edit', 'AdminPostController@edit')->name('admin.post.edit');
+        Route::put('/posts/{post}', 'AdminPostController@update')->name('admin.post.update');
+        Route::delete('/posts/{post}', 'AdminPostController@destroy')->name('admin.post.destroy');
+    });
 });
 
 Auth::routes();

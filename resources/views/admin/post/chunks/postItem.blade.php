@@ -29,11 +29,7 @@
     </td>
     <td>{{$post->created_at->toDateTimeString()}}</td>
     <td>
-        {{--Для следуюущих строк если указать в route('posts.edit', $post->slug)
-         вместо route('postsPanel.edit', $post->slug) то все работает и все данные приходят,
-         но в другой контроллер.
-         Также не нравится дублированиие кода для post-контроллкеров расположенных в админкой и публичных частях--}}
-        <a href="{{route('postsPanel.edit', $post->slug)}}" class="btn btn-outline-primary">Редактировать</a>
+        <a href="{{route('admin.post.edit', $post->slug)}}" class="btn btn-outline-primary">Редактировать</a>
         @include('admin.post.chunks.deletePost')
     </td>
 </tr>

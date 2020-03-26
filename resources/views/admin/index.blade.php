@@ -18,7 +18,7 @@
             </tr>
             <tr>
                 <td>Управление статьями</td>
-                <td><a href="{{route('postsPanel.index')}}">Панель управления постами</a></td>
+                <td><a href="{{route('admin.posts.index')}}">Панель управления постами</a></td>
             </tr>
             </tbody>
         </table>

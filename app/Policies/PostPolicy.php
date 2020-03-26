@@ -17,11 +17,13 @@ class PostPolicy
         if ($user->isAdmin() || $post->owner_id == $user->id) {
             $access = true;
         }
-        return $access ? Response::allow() : Response::deny('У вас нет прав для управления этой статьей');
+        return $access ?
+            Response::allow() :
+            Response::deny('У вас нет прав для управления этим постом');
     }
 
     /**
-     * Проверка на наличие прав для редактрования статьи
+     * Проверка на наличие прав для редактрования поста
      *
      * @param User $user
      * @param Post $post
@@ -33,7 +35,7 @@ class PostPolicy
     }
 
     /**
-     * Determine whether the user can delete the post.
+     * Проверка на наличие прав для удаления поста
      *
      * @param User $user
      * @param Post $post

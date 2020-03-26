@@ -16,8 +16,18 @@
         {{--блок кнопок. Показывать только тем пользователям, у которых есть права на управление статьей--}}
         @if(Gate::allows('isAccessToEdit',$post))
             <div class="service-block mt-2">
-                <a href="{{route('posts.edit', $post->slug)}}" class="btn btn-outline-primary">Редактировать статью</a>
-                @include('post.chunks.deleteArticle')
+                @isAdmin
+                    <a href="{{route('admin.post.edit', $post->slug)}}" class="btn btn-outline-primary">
+                        Редактировать статью
+                    </a>
+                @else
+                    <a href="{{route('posts.edit', $post->slug)}}" class="btn btn-outline-primary">
+                        Редактировать статью
+                    </a>
+                @endisAdmin
+
+
+                    @include('post.chunks.deleteArticle')
             </div>
         @endif
     </div>

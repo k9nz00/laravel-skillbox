@@ -5,100 +5,99 @@ namespace App\Http\Controllers\Admin\Post;
 use App\Helpers\MessageHelpers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Post\StorePostRequest;
+use App\Http\Requests\Post\UpdatePostRequest;
 use App\Models\Post;
-use App\Models\Tag;
-use Auth;
-use Illuminate\Contracts\View\Factory;
+use App\Services\PostServices;
+use Exception;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Routing\Redirector;
 use Illuminate\View\View;
 
 class AdminPostController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Список всех постов
      *
-     * @return Factory|View
+     * @return View
      */
     public function index()
     {
-       $posts = Post::latest()->get();
-       return view('admin.post.index', compact('posts'));
+        $posts = Post::latest()->get();
+        return view('admin.post.index', compact('posts'));
     }
 
     /**
      * Создание поста из админки
      *
-     * @return Factory|View
+     * @return View
      */
     public function create()
     {
-       return view('admin.post.create');
+        return view('admin.post.create');
     }
 
     /**
      * Сохранение поста из админки
      *
      * @param StorePostRequest $storePostRequest
+     * @param PostServices $postServices
      * @return RedirectResponse
      */
-    public function store(StorePostRequest $storePostRequest)
+    public function store(StorePostRequest $storePostRequest, PostServices $postServices)
     {
-        $validatedData = $storePostRequest->validated();
-        $post = Post::create(array_merge($validatedData, [
-            'publish'  => (boolean)$storePostRequest->publish,
-            'owner_id' => Auth::id(),
-        ]));
+        $post = $postServices->storePost($storePostRequest);
+        $postWithTags = $postServices->addTagsToPost($storePostRequest, $post);
 
-        $tagsIds = [];
-        $tagsToAttach = explode(', ', $storePostRequest->tags);
-        foreach ($tagsToAttach as $tagToAttach) {
-            $tagToAttach = Tag::firstOrCreate(['name' => $tagToAttach]);
-            $tagsIds[] = $tagToAttach->id;
-        }
-        $post->tags()->sync($tagsIds);
-        $messageAboutCreate = 'Статья ' . $post->title . ' успешно создана';
+        $messageAboutCreate = 'Статья ' . $postWithTags->title . ' успешно создана';
         MessageHelpers::flashMessage($messageAboutCreate);
-        return redirect()->route('postsPanel.index');
+        return redirect()->route('admin.posts.index');
     }
 
     /**
      * Редактирование поста из админки
      *
      * @param Post $post
-     * @return Factory|View
+     * @return View
      */
     public function edit(Post $post)
     {
-        //приходит пустой $post
-        dd($post);
-//        Gate::authorize('update', $post);
-//        return view('admin.post.edit', compact('post'));
+        return view('admin.post.edit', compact('post'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Обновление поста из админки
      *
-     * @param Request $request
+     * @param UpdatePostRequest $updatePostRequest
      * @param Post $post
-     * @return Response
+     * @param PostServices $postServices
+     * @return RedirectResponse
      */
-    public function update(Request $request, Post $post)
+    public function update(UpdatePostRequest $updatePostRequest, Post $post, PostServices $postServices)
     {
-        //
+        $updatedPost = $postServices->updatePost($updatePostRequest, $post);
+        $updatedPostWithNewTags = $postServices->updateTagsToPost($updatePostRequest, $updatedPost);
+
+        $messageAboutUpdate = 'Статья ' . $updatedPostWithNewTags->title . ' успешно обновлена';
+        MessageHelpers::flashMessage($messageAboutUpdate, 'info');
+
+        return redirect()->route('admin.posts.index', $post->slug);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param Post $post
-     * @return Response
+     * @param PostServices $postServices
+     * @return RedirectResponse|Redirector
+     * @throws Exception
      */
-    public function destroy(Post $post)
+    public function destroy(Post $post, PostServices $postServices)
     {
-        //приходит пустой $post
-        dd($post);
-
+        $isDeleted = $postServices->destroyPost($post);
+        if ($isDeleted) {
+            return redirect(route('admin.posts.index'));
+        } else {
+            return back()->withErrors('Не удалось удалить статью ' . $post->title);
+        }
     }
 }
