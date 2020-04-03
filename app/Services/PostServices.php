@@ -8,6 +8,7 @@ use App\Http\Requests\Post\UpdatePostRequest;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Notifications\PostNotafication\ChangePostStateNotification;
+use App\Services\ExternalServices\Pushall;
 use App\User;
 use Auth;
 use Exception;
@@ -30,6 +31,11 @@ class PostServices
             'publish'  => (boolean)$storePostRequest->publish,
             'owner_id' => Auth::id(),
         ]));
+
+        //отправка уведомления на pushall при создании статьи
+        $pushall = app('Pushall');
+        /** @var Pushall $pushall */
+        $pushall->send('На сайте была создана новая статья', $post->title);
         return $post;
     }
 
