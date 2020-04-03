@@ -7,9 +7,11 @@
 
     <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset(mix('js/app.js'))}}" defer></script>
+    <script src="{{ asset(mix('js/manifest.js'))}}" defer></script>
+    <script src="{{ asset(mix('js/vendor.js'))}}" defer></script>
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset(mix('css/app.css'))}}" rel="stylesheet">
     <title>@yield('title')</title>
 </head>
 <body>
