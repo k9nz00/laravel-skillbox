@@ -33,7 +33,7 @@ class PostServices
         ]));
 
         //отправка уведомления на pushall при создании статьи
-        $pushall = app('Pushall');
+        $pushall = app(Pushall::class);
         /** @var Pushall $pushall */
         $pushall->send('На сайте была создана новая статья', $post->title);
         return $post;
