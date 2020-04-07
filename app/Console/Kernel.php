@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -19,13 +20,20 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @param \Illuminate\Console\Scheduling\Schedule $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
     {
-         $schedule->command('notify:aboutNewPosts 1')
-             ->weeklyOn(1, '12:00');
+        $dateFrom = Carbon::now()->modify('-8 days');
+        $dateTo = Carbon::now()->modify('+1 day');
+
+        $command = 'notify:aboutNewPosts '
+            . $dateFrom->format('Y-m-d') . ' '
+            . $dateTo->format('Y-m-d');
+
+        $schedule->command($command)
+            ->weeklyOn(1, '12:00');
     }
 
     /**
@@ -35,7 +43,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

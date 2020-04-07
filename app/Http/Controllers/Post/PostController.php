@@ -40,13 +40,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::wherePublish(1)
-            ->with([
-            'tags' => function ($query) {
-                $query->select('name');
-            },])
-            ->latest()
-            ->get();    //при выборе конкретных полей поста не подгружаются теги. РАзобраться
+        $posts = Post::getPublishedPosts();
         return view('post.list', compact('posts'));
     }
 

@@ -10,6 +10,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Lang;
 use Mockery\Exception;
 
 class SendNotificationAboutNewPosts extends Notification
@@ -52,7 +53,7 @@ class SendNotificationAboutNewPosts extends Notification
      * @param $subject
      * @param $countWeek
      */
-    public function __construct(User $user, $posts, $subject, $countWeek)
+    public function __construct(User $user, array $posts, string $subject, int $countWeek)
     {
         $this->user = $user;
         $this->posts = $posts;
@@ -99,11 +100,12 @@ class SendNotificationAboutNewPosts extends Notification
         return (new MailMessage)
             ->subject($this->subject)
             ->line('Здраствуйте, ' . $this->user->name . '!')
-            ->line('За ' . $this->countWeek . StringHelper::morph($this->countWeek, ' неделю', ' недели', ' недель')
+            ->line('За ' . $this->countWeek . ' '
+                . Lang::choice('wordsForms.weeksForNotifyMessage', $this->countWeek)
                 . ' на сайте '
-                . StringHelper::morph(count($this->posts), ' появилась', ' появилось', ' появилось')
-                . count($this->posts)
-                . StringHelper::morph(count($this->posts), ' новая статья', ' новых статей', ' новых статей'))
+                . Lang::choice('wordsForms.articlesAppeared', $this->posts) . ' '
+                . count($this->posts) .' '
+                . Lang::choice('wordsForms.newArticlesForNotifyMessage', $this->posts))
             ->line('Если есть свободное время, то уделите минутку своего времени')
             ->line('Вот лишь некоторые заголовки новых статей - ' . implode(', ', $this->getRandomPostsTitle()))
             ->line('Просмотреть все статьи вы можете на сайте.')
