@@ -56,5 +56,4 @@ class Tag extends Model
     {
         return (new static)->has('posts')->get();
     }
-
 }

@@ -10,7 +10,7 @@
 
         @include('layouts.layoutsChunk.errorsForm')
         <h3 class="text-center">Создание статьи</h3>
-        <form action="{{route('admin.post.store')}}" method="post">
+        <form action="{{route('admin.posts.store')}}" method="post">
             @csrf
             @include('post.chunks.formArticle')
             <button type="submit" class="btn btn-primary">Создать статью</button>

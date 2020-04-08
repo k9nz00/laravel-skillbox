@@ -17,7 +17,7 @@
         @if(Gate::allows('isAccessToEdit',$post))
             <div class="service-block mt-2">
                 @isAdmin
-                    <a href="{{route('admin.post.edit', $post->slug)}}" class="btn btn-outline-primary">
+                    <a href="{{route('admin.posts.edit', $post->slug)}}" class="btn btn-outline-primary">
                         Редактировать статью
                     </a>
                 @else

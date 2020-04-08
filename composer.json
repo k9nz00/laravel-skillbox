@@ -10,10 +10,10 @@
     "require": {
         "php": "^7.2",
         "fideloper/proxy": "^4.0",
+        "guzzlehttp/guzzle": "~6.0",
         "laravel/framework": "^6.2",
         "laravel/telescope": "^3.1",
-        "laravel/tinker": "^2.0",
-        "guzzlehttp/guzzle": "~6.0"
+        "laravel/tinker": "^2.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.2",

@@ -29,7 +29,7 @@
     </td>
     <td>{{$post->created_at->toDateTimeString()}}</td>
     <td>
-        <a href="{{route('admin.post.edit', $post->slug)}}" class="btn btn-outline-primary">Редактировать</a>
+        <a href="{{route('admin.posts.edit', $post->slug)}}" class="btn btn-outline-primary">Редактировать</a>
         @include('admin.post.chunks.deletePost')
     </td>
 </tr>

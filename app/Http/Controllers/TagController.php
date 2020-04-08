@@ -9,7 +9,7 @@ class TagController extends Controller
 {
     public function index(Tag $tag)
     {
-        $posts = $tag->posts()->with('tags')->get();
+        $posts = $tag->posts()->getPublishedPosts();
         return view('post.list', compact('posts'));
     }
 }
