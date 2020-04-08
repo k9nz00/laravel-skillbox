@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RolesTableSeeder::class,
             TagsSeeder::class,
-            AdminSeeder::class,
+            //AdminSeeder::class, //админ создается в CreateRoleUserTable
             UsersTableSeeder::class,
             UsersFeedbackSeeder::class,
         ]);

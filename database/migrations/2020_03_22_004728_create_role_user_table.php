@@ -22,6 +22,11 @@ class CreateRoleUserTable extends Migration
 
             $table->primary(['user_id', 'role_id']);
         });
+
+        //Создание предустановленного юзера (админа) с ролью "admin"
+        Artisan::call('db:seed', [
+            '--class'=> AdminSeeder::class
+        ]);
     }
 
     /**
