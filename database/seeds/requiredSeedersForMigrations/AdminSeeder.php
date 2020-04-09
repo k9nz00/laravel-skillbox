@@ -21,7 +21,7 @@ class AdminSeeder extends Seeder
            'remember_token' => Str::random(10),
        ]);
 
-       $adminRoleId = Role::firstOrCreate(['name' => 'admin']);
-       $user->roles()->sync([$adminRoleId->id]);
+       $adminRole = Role::firstOrCreate(['name' => 'admin']);
+       $user->roles()->sync([$adminRole->id]);
     }
 }
