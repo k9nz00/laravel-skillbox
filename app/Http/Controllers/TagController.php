@@ -9,7 +9,11 @@ class TagController extends Controller
 {
     public function index(Tag $tag)
     {
-        $posts = $tag->posts()->getPublishedPosts();
+        $posts = $tag->posts()->get();
         return view('post.list', compact('posts'));
+
+        //не могу понять как получить только опубликованные посты, у которых есть текущий тег
+        //следующая конструкция не рабоатет
+        //$posts = $tag->posts()->where('publish', '=', 1);
     }
 }

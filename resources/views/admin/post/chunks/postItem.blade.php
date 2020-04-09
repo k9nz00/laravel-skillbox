@@ -1,5 +1,5 @@
 @php
-    $post = $post ?? collect();
+    $post = $post ?? new \App\Models\Post();
 @endphp
 <tr>
     <?php /** @var $post App\Models\Post */ ?>

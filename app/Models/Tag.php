@@ -55,5 +55,7 @@ class Tag extends Model
     public static function getTagsCloud()
     {
         return (new static)->has('posts')->get();
+        //та же проблема что и app/Http/Controllers/TagController.php:15
+        //не получатеся помимо существования постов добавить к ним еще и условие на поля (publish=1)
     }
 }

@@ -43,6 +43,7 @@ use Illuminate\Support\Facades\Auth;
  * @property-read \App\User $users
  * @property-read \App\User $user
  * @property-read \App\User $owner
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post postsForEmailNotify($dateFrom, $dateTo)
  */
 class Post extends Model
 {
@@ -80,7 +81,8 @@ class Post extends Model
     }
 
     /**
-     * Публикация поста
+     * Публикация статьи
+     *
      * @param bool $publish
      */
     public function published($publish = true)
@@ -91,7 +93,7 @@ class Post extends Model
     }
 
     /**
-     * Снятие поста с пубикации
+     * Снятие статьи с пубикации
      */
     public function anPublished()
     {
@@ -100,6 +102,7 @@ class Post extends Model
 
     /**
      * Получить посты для рассыки, попадающие в интервал дат создания
+     *
      * @param $query
      * @param string $dateFrom
      * @param string $dateTo
@@ -115,20 +118,20 @@ class Post extends Model
 
     /**
      * Получить все опубликованные посты с тегами, которые к ним привязаны
-     * @param $query
+     *
+     * @param int $postLimit
      * @return Builder[]|Collection
      */
-    public function scopeGetPublishedPosts($query)
+    public static function getLastPublishedArticlesWithTags(int $postLimit = 30)
     {
-        return Post::where('publish', '=', 1)
+        return static::wherePublish(1)
+            ->latest()
+            ->limit($postLimit)
             ->with([
                 'tags' => function ($query) {
                     $query->select('name');
                 },
             ])
-            ->latest()
-            //если выбираются элементы, с использованиием связей,
-            // то надо выюирать и id основного элемента
             ->get(['id', 'title', 'slug', 'shortDescription', 'created_at']);
     }
 }

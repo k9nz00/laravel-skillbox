@@ -40,7 +40,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::getPublishedPosts();
+        $posts = Post::getLastPublishedArticlesWithTags();
         return view('post.list', compact('posts'));
     }
 

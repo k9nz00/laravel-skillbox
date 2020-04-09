@@ -77,7 +77,7 @@ class SendNotificationAboutNewPostsCommand extends Command
                 $user,
                 $this->getPosts(),
                 $this->subject,
-                $this->getWeekCount()));
+                $this->getCountWeek()));
         }
         return  true;
     }
@@ -119,20 +119,29 @@ class SendNotificationAboutNewPostsCommand extends Command
     }
 
     /**
-     * Вычисляет и устанавливает количетво для дат рассылки
+     * Вычисляет и устанавливает количетво недель для дат рассылки
      */
     private function calculateWeekCount(): void
     {
-        $dateFromTimeStamp = Carbon::createFromTimeString($this->dateFrom.' 00:00:00')->getTimestamp();
-        $dateToTimeStamp = Carbon::createFromTimeString($this->dateTo.' 00:00:00')->getTimestamp();
-
-        $differenceTimeStamp = $dateToTimeStamp - $dateFromTimeStamp;
-        $countWeek = Carbon::createFromTimestamp($differenceTimeStamp)->week;
-        $this->countWeek = $countWeek;
+        $dateFrom = Carbon::createFromTimeString($this->dateFrom.' 00:00:00');
+        $dateToTimeStamp = Carbon::createFromTimeString($this->dateTo.' 00:00:00');
+        $this->setCountWeek($dateToTimeStamp->diffInWeeks($dateFrom));
     }
 
-    protected function getWeekCount(): int
+    /**
+     * @return int
+     */
+    public function getCountWeek(): int
     {
         return $this->countWeek;
+    }
+
+    /**
+     * Устанавливает количестов недель
+     * @param int $countWeek
+     */
+    public function setCountWeek(int $countWeek) : void
+    {
+        $this->countWeek = $countWeek;
     }
 }
