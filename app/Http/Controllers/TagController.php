@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 
@@ -9,11 +10,10 @@ class TagController extends Controller
 {
     public function index(Tag $tag)
     {
-        $posts = $tag->posts()->get();
+        $posts = $tag
+            ->posts()
+            ->where('publish', '=', '1') //параметр value должен быть строкой - иначе не работает
+            ->get();
         return view('post.list', compact('posts'));
-
-        //не могу понять как получить только опубликованные посты, у которых есть текущий тег
-        //следующая конструкция не рабоатет
-        //$posts = $tag->posts()->where('publish', '=', 1);
     }
 }

@@ -44,6 +44,7 @@ use Illuminate\Support\Facades\Auth;
  * @property-read \App\User $user
  * @property-read \App\User $owner
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post postsForEmailNotify($dateFrom, $dateTo)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post getLastPublishedArticles()
  */
 class Post extends Model
 {
@@ -108,12 +109,11 @@ class Post extends Model
      * @param string $dateTo
      * @return Collection
      */
-    public function scopePostsForEmailNotify($query, string $dateFrom, string $dateTo): Collection
+    public function scopePostsForEmailNotify($query, string $dateFrom, string $dateTo)
     {
         return $query
             ->where('created_at', '>=', $dateFrom . ' 00:00:00')
-            ->where('created_at', '<=', $dateTo . ' 00:00:00')
-            ->get('title');
+            ->where('created_at', '<=', $dateTo . ' 00:00:00');
     }
 
     /**
@@ -124,8 +124,7 @@ class Post extends Model
      */
     public static function getLastPublishedArticlesWithTags(int $postLimit = 30)
     {
-        return static::wherePublish(1)
-            ->latest()
+        return static::getLastPublishedArticles()
             ->limit($postLimit)
             ->with([
                 'tags' => function ($query) {
@@ -133,5 +132,15 @@ class Post extends Model
                 },
             ])
             ->get(['id', 'title', 'slug', 'shortDescription', 'created_at']);
+    }
+
+    /**
+     * Получить все опубликованные посты отфильтрованные по дате создания в обратном порядке
+     *
+     * @return Builder
+     */
+    public function scopeGetLastPublishedArticles()
+    {
+        return static::wherePublish(1)->latest();
     }
 }

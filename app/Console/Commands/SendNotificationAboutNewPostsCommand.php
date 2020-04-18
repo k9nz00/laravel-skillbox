@@ -90,7 +90,7 @@ class SendNotificationAboutNewPostsCommand extends Command
         $this->calculateWeekCount();
 
         //Выборка постов при помощи scope-метода
-        $posts = Post::postsForEmailNotify($this->dateFrom, $this->dateTo);
+        $posts = Post::postsForEmailNotify($this->dateFrom, $this->dateTo)->get('title');
 
         foreach ($posts as $post) {
             $this->posts[] = $post;

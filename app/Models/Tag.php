@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -12,15 +14,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string $name
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Post[] $posts
+ * @property-read Collection|\App\Models\Post[] $posts
  * @property-read int|null $posts_count
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tag newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tag newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tag query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tag whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tag whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tag whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tag whereUpdatedAt($value)
+ * @method static Builder|\App\Models\Tag newModelQuery()
+ * @method static Builder|\App\Models\Tag newQuery()
+ * @method static Builder|\App\Models\Tag query()
+ * @method static Builder|\App\Models\Tag whereCreatedAt($value)
+ * @method static Builder|\App\Models\Tag whereId($value)
+ * @method static Builder|\App\Models\Tag whereName($value)
+ * @method static Builder|\App\Models\Tag whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 class Tag extends Model
@@ -52,10 +54,16 @@ class Tag extends Model
         return $this->belongsToMany(Post::class);
     }
 
+    /**
+     *
+     * Возвращает коллекцию тегов для sidebar, у которых есть опубликованные посты
+     * @return Collection
+     */
     public static function getTagsCloud()
     {
-        return (new static)->has('posts')->get();
-        //та же проблема что и app/Http/Controllers/TagController.php:15
-        //не получатеся помимо существования постов добавить к ним еще и условие на поля (publish=1)
+        $tags = (new static)->whereHas('posts', function ($query) {
+            $query->where('publish', '=', '1');
+        })->get();
+        return $tags;
     }
 }
