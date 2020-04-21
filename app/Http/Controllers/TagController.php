@@ -11,9 +11,12 @@ class TagController extends Controller
     public function index(Tag $tag)
     {
         $posts = $tag
-            ->posts()
-            ->where('publish', '=', '1') //параметр value должен быть строкой - иначе не работает
-            ->get();
+            ->load([
+                'posts' => function ($query) {
+                    return $query->where('publish', '=', 1);
+                },])
+            ->posts;
+
         return view('post.list', compact('posts'));
     }
 }

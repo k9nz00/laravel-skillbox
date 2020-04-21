@@ -7,6 +7,7 @@ use App\Models\Role;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Validation\Rule;
 use Tests\TestCase;
 
 class PostsTest extends TestCase
@@ -18,14 +19,29 @@ class PostsTest extends TestCase
      */
     public function testUserCanCreatePost()
     {
-        //отключение перехвата ошибок
-        $this->withoutExceptionHandling();
-
         $this->actingAs($user = factory(User::class)->create());
         $attributes = factory(Post::class)->raw(['owner_id' => $user]);
 
         $this->post(route('posts.store', $attributes), $attributes);
         $this->assertDatabaseHas('posts', $attributes);
+    }
+
+    /**
+     * Проверка валидации при создании поста - пустые поля не должны пройти валидацию
+     */
+    public function testFormFieldsCanNotBeEmptyWhenCreatingAPost()
+    {
+        $this->actingAs($user = factory(User::class)->create());
+        $attributes = [
+            'slug'=> '',
+            'title' => '',
+            'shortDescription' => '',
+            'body' => '',
+            'owner_id' => ''
+        ];
+        $this
+            ->post(route('posts.store', $attributes), $attributes)
+            ->assertSessionHasErrors();
     }
 
     /**

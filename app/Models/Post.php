@@ -111,9 +111,7 @@ class Post extends Model
      */
     public function scopePostsForEmailNotify($query, string $dateFrom, string $dateTo)
     {
-        return $query
-            ->where('created_at', '>=', $dateFrom . ' 00:00:00')
-            ->where('created_at', '<=', $dateTo . ' 00:00:00');
+        return $query->whereBetween('created_at', [$dateFrom . ' 00:00:00', $dateTo . ' 00:00:00']);
     }
 
     /**
