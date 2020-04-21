@@ -22,20 +22,16 @@ class PostServices
      * Возвращает объект сохраненного поста
      *
      * @param StorePostRequest $storePostRequest
-     * @return Post|Model
+     * @return Post
      */
-    public function storePost(StorePostRequest $storePostRequest)
+    public function storePost(StorePostRequest $storePostRequest) : Post
     {
         $validatedData = $storePostRequest->validated();
         $post = Post::create(array_merge($validatedData, [
-            'publish'  => (boolean)$storePostRequest->publish,
+            'publish' => (boolean)$storePostRequest->publish,
             'owner_id' => Auth::id(),
         ]));
 
-        //отправка уведомления на pushall при создании статьи
-        $pushall = app(Pushall::class);
-        /** @var Pushall $pushall */
-        $pushall->send('На сайте была создана новая статья', $post->title);
         return $post;
     }
 
@@ -47,7 +43,7 @@ class PostServices
      * @param Post $post
      * @return Post
      */
-    public function updatePost(UpdatePostRequest $updatePostRequest, Post $post)
+    public function updatePost(UpdatePostRequest $updatePostRequest, Post $post) : Post
     {
         $validatedData = $updatePostRequest->validated();
         $post->update(array_merge($validatedData, [
@@ -116,5 +112,19 @@ class PostServices
         }
         $post->tags()->sync($tagsIdsForSync);
         return $post;
+    }
+
+    /**
+     * Отправка уведомления на pushall
+     * @param string $body
+     * @param string $title
+     * @return void
+     */
+    public function sendNotificationsViaPushall(string $body, string $title = 'На сайте была создана новая статья') : void
+    {
+        $pushall = app(Pushall::class);
+
+        /** @var Pushall $pushall */
+        $pushall->send($title, $body);
     }
 }

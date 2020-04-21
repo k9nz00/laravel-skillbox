@@ -76,6 +76,7 @@ class PostController extends Controller
     {
         $post = $postServices->storePost($storePostRequest);
         $postWithTags = $postServices->addTagsToPost($storePostRequest, $post);
+        $postServices->sendNotificationsViaPushall($postWithTags->title); //телом push-уведомления является заголовок статьи
 
         //Отправка почтового уведомления администратору сайта
         $subjectMessage = 'Статья ' . $postWithTags->title . ' была создана';

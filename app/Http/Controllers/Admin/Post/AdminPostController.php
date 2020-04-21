@@ -47,6 +47,7 @@ class AdminPostController extends Controller
     {
         $post = $postServices->storePost($storePostRequest);
         $postWithTags = $postServices->addTagsToPost($storePostRequest, $post);
+        $postServices->sendNotificationsViaPushall($postWithTags->title); //телом push-уведомления является заголовок статьи
 
         $messageAboutCreate = 'Статья ' . $postWithTags->title . ' успешно создана';
         MessageHelpers::flashMessage($messageAboutCreate);
