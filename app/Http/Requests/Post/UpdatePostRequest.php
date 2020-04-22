@@ -28,7 +28,11 @@ class UpdatePostRequest extends StorePostRequest
             'slug' => [
                 'required',
                 'alpha_dash',
-                Rule::unique('posts')->ignore($this->route()->parameters()['post']->id),
+                Rule::unique('posts')
+                    ->ignore(
+                        $this->route()
+                            ->parameters()['post']->id
+                    ),
             ],
         ]);
     }

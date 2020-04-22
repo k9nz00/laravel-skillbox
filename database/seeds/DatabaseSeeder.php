@@ -11,10 +11,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // $this->call(UsersTableSeeder::class);
-
-        factory(App\User::class, 5)->create()->each(function($user) {
-            $user->posts()->saveMany(factory(App\Models\Post::class, 10)->make());
-        });
+        $this->call([
+            RolesTableSeeder::class,
+            TagsSeeder::class,
+            //AdminSeeder::class, //админ создается в CreateRoleUserTable
+            UsersTableSeeder::class,
+            UsersFeedbackSeeder::class,
+        ]);
     }
 }

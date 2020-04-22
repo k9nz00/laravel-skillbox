@@ -3,11 +3,13 @@
 namespace App;
 
 use App\Models\Post;
+use App\Models\Role;
 use Auth;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -39,6 +41,8 @@ use Illuminate\Notifications\Notifiable;
  * @mixin \Eloquent
  * @property-read Collection|\App\Models\Post[] $posts
  * @property-read int|null $posts_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Role[] $roles
+ * @property-read int|null $roles_count
  */
 class User extends Authenticatable
 {
@@ -74,16 +78,17 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    /**
-     * Проверка на админские права.
-     * Пока как заглушка пользователь с id=1 считается администратором
-     *
-     * @return bool
-     */
-    public function isAdmin()
-    {
-        return $this->id == 1 ? true : false;
-    }
+//    /**
+//     * Проверка на админские права.
+//     * Пока как заглушка пользователь с id=1 считается администратором
+//     *
+//     * @return bool
+//     */
+//    public function isAdmin()
+//    {
+//        //переделать
+//        return $this->id == 1 ? true : false;
+//    }
 
     /**
      * Получить пользователя правами администраторов
@@ -103,5 +108,33 @@ class User extends Authenticatable
     public function posts()
     {
         return $this->hasMany(Post::class, 'owner_id');
+    }
+
+    /**
+     * @return BelongsToMany
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    /**
+     * Является ли текущий авторизованный пользователь администратором
+     *
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        $roles = $this->roles()->where('name','=',  'admin')->get();
+        foreach ($roles as $role)
+        {
+            /** @var $role Role */
+            $roleName = $role->name;
+            if ($roleName == 'admin')
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

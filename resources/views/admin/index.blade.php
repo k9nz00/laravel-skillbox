@@ -14,7 +14,11 @@
             <tbody>
             <tr>
                 <td>feedbacks</td>
-                <td><a href="{{route('admin.feedback')}}">{{route('admin.feedback')}}</a></td>
+                <td><a href="{{route('admin.feedback')}}">Отзывы пользователей</a></td>
+            </tr>
+            <tr>
+                <td>Управление статьями</td>
+                <td><a href="{{route('admin.posts.index')}}">Панель управления постами</a></td>
             </tr>
             </tbody>
         </table>

@@ -9,8 +9,9 @@ use App\Http\Requests\Post\UpdatePostRequest;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Notifications\PostNotafication\ChangePostStateNotification;
+use App\Services\PostServices;
 use App\User;
-use Illuminate\Auth\Access\AuthorizationException;
+use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
@@ -39,11 +40,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::with([
-            'tags' => function ($query) {
-                $query->select('name');
-            },
-        ])->latest()->get(['title', 'slug', 'shortDescription', 'created_at']);
+        $posts = Post::getLastPublishedArticlesWithTags();
         return view('post.list', compact('posts'));
     }
 
@@ -51,7 +48,7 @@ class PostController extends Controller
      * Показ одной статьи
      *
      * @param Post $post
-     * @return Factory|View
+     * @return View
      */
     public function show(Post $post)
     {
@@ -61,7 +58,7 @@ class PostController extends Controller
     /**
      * Страница создания статьи
      *
-     * @return RedirectResponse|View
+     * @return View
      */
     public function create()
     {
@@ -72,30 +69,21 @@ class PostController extends Controller
      * Сохраняет новую статью
      *
      * @param StorePostRequest $storePostRequest
+     * @param PostServices $postServices
      * @return RedirectResponse|Redirector
      */
-    public function store(StorePostRequest $storePostRequest)
+    public function store(StorePostRequest $storePostRequest, PostServices $postServices)
     {
-        $validatedData = $storePostRequest->validated();
-        $post = Post::create(array_merge($validatedData, [
-            'publish'  => (boolean)$storePostRequest->publish,
-            'owner_id' => Auth::id(),
-        ]));
+        $post = $postServices->storePost($storePostRequest);
+        $postWithTags = $postServices->addTagsToPost($storePostRequest, $post);
+        $postServices->sendNotificationsViaPushall($postWithTags->title); //телом push-уведомления является заголовок статьи
 
-        $subjectMessage = 'Статья ' . $post->title . ' была создана';
-        //Отправка почного уведомления администратору сайта
+        //Отправка почтового уведомления администратору сайта
+        $subjectMessage = 'Статья ' . $postWithTags->title . ' была создана';
         User::getAdmin()->notify(new ChangePostStateNotification($post, $subjectMessage,
             ChangePostStateNotification::POST_TYPE_STATUS_CREATE));
 
-        $tagsIds = [];
-        $tagsToAttach = explode(', ', $storePostRequest->tags);
-        foreach ($tagsToAttach as $tagToAttach) {
-            $tagToAttach = Tag::firstOrCreate(['name' => $tagToAttach]);
-            $tagsIds[] = $tagToAttach->id;
-        }
-        $post->tags()->sync($tagsIds);
-
-        $messageAboutCreate = 'Статья ' . $post->title . ' успешно создана';
+        $messageAboutCreate = 'Статья ' . $postWithTags->title . ' успешно создана';
         MessageHelpers::flashMessage($messageAboutCreate);
 
         return redirect()->route('posts.index');
@@ -105,8 +93,7 @@ class PostController extends Controller
      * Редактирование статьи
      *
      * @param Post $post
-     * @return Factory|View
-     * @throws AuthorizationException
+     * @return View
      */
     public function edit(Post $post)
     {
@@ -119,39 +106,21 @@ class PostController extends Controller
      *
      * @param UpdatePostRequest $updatePostRequest
      * @param Post $post
+     * @param PostServices $postServices
      * @return RedirectResponse
      */
-    public function update(UpdatePostRequest $updatePostRequest, Post $post)
+    public function update(UpdatePostRequest $updatePostRequest, Post $post, PostServices $postServices)
     {
-        $validatedData = $updatePostRequest->validated();
-        $post->update(array_merge($validatedData, [
-            'publish' => (boolean)$updatePostRequest->publish,
-        ]));
+        $updatedPost = $postServices->updatePost($updatePostRequest, $post);
+        $updatedPostWithNewTags = $postServices->updateTagsToPost($updatePostRequest, $updatedPost);
 
-        $subjectMessage = 'Статья ' . $post->title . ' была обновлена';
+        $messageAboutUpdate = 'Статья ' . $updatedPostWithNewTags->title . ' успешно обновлена';
+        MessageHelpers::flashMessage($messageAboutUpdate, 'info');
+
         //Отправка почного уведомления администратору сайта
+        $subjectMessage = 'Статья ' . $updatedPostWithNewTags->title . ' была обновлена';
         User::getAdmin()->notify(new ChangePostStateNotification($post, $subjectMessage,
             ChangePostStateNotification::POST_TYPE_STATUS_UPDATE));
-
-        $existTagsFromPost = $post->tags->keyBy('name');
-        $tagsForPost = collect(explode(', ', request('tags')))
-            ->keyBy(function ($item) {
-                return $item;
-            });
-        $tagsIdsForSync = $existTagsFromPost
-            ->intersectByKeys($tagsForPost)
-            ->pluck('id')
-            ->toArray();
-
-        $tagsToAttach = $tagsForPost->diffKeys($existTagsFromPost);
-        foreach ($tagsToAttach as $tagToAttach) {
-            $tagToAttach = Tag::firstOrCreate(['name' => $tagToAttach]);
-            $tagsIdsForSync[] = $tagToAttach->id;
-        }
-        $post->tags()->sync($tagsIdsForSync);
-
-        $messageAboutCreate = 'Статья ' . $post->title . ' успешно обновлена';
-        MessageHelpers::flashMessage($messageAboutCreate, 'info');
 
         return redirect()->route('posts.show', $post->slug);
     }
@@ -161,17 +130,15 @@ class PostController extends Controller
      *
      * @param Post $post
      * @return RedirectResponse
-     * @throws \Exception
+     * @throws Exception
      */
-    public function destroy(Post $post)
+    public function destroy(Post $post, PostServices $postServices)
     {
         $this->authorize('update', $post);
-        if ($post->delete()) {
-            $messageAboutCreate = 'Статья ' . $post->title . ' удалена';
-            MessageHelpers::flashMessage($messageAboutCreate, 'warning');
-
-            $subjectMessage = 'Статья ' . $post->title . ' была удалена';
+        $isDeleted = $postServices->destroyPost($post);
+        if ($isDeleted) {
             //Отправка почного уведомления администратору сайта
+            $subjectMessage = 'Статья ' . $post->title . ' была удалена';
             User::getAdmin()->notify(new ChangePostStateNotification($post, $subjectMessage,
                 ChangePostStateNotification::POST_TYPE_STATUS_DELETE));
 
