@@ -75,15 +75,15 @@ class PostController extends Controller
     public function store(StorePostRequest $storePostRequest, PostServices $postServices)
     {
         $post = $postServices->storePost($storePostRequest);
-        $postWithTags = $postServices->addTagsToPost($storePostRequest, $post);
-        $postServices->sendNotificationsViaPushall($postWithTags->title); //телом push-уведомления является заголовок статьи
+        $postServices->addTagsToPost($storePostRequest, $post);
+        $postServices->sendNotificationsViaPushall($post->title); //телом push-уведомления является заголовок статьи
 
         //Отправка почтового уведомления администратору сайта
-        $subjectMessage = 'Статья ' . $postWithTags->title . ' была создана';
+        $subjectMessage = 'Статья ' . $post->title . ' была создана';
         User::getAdmin()->notify(new ChangePostStateNotification($post, $subjectMessage,
             ChangePostStateNotification::POST_TYPE_STATUS_CREATE));
 
-        $messageAboutCreate = 'Статья ' . $postWithTags->title . ' успешно создана';
+        $messageAboutCreate = 'Статья ' . $post->title . ' успешно создана';
         MessageHelpers::flashMessage($messageAboutCreate);
 
         return redirect()->route('posts.index');
@@ -112,13 +112,13 @@ class PostController extends Controller
     public function update(UpdatePostRequest $updatePostRequest, Post $post, PostServices $postServices)
     {
         $updatedPost = $postServices->updatePost($updatePostRequest, $post);
-        $updatedPostWithNewTags = $postServices->updateTagsToPost($updatePostRequest, $updatedPost);
+        $postServices->updateTagsToPost($updatePostRequest, $updatedPost);
 
-        $messageAboutUpdate = 'Статья ' . $updatedPostWithNewTags->title . ' успешно обновлена';
+        $messageAboutUpdate = 'Статья ' . $updatedPost->title . ' успешно обновлена';
         MessageHelpers::flashMessage($messageAboutUpdate, 'info');
 
         //Отправка почного уведомления администратору сайта
-        $subjectMessage = 'Статья ' . $updatedPostWithNewTags->title . ' была обновлена';
+        $subjectMessage = 'Статья ' . $updatedPost->title . ' была обновлена';
         User::getAdmin()->notify(new ChangePostStateNotification($post, $subjectMessage,
             ChangePostStateNotification::POST_TYPE_STATUS_UPDATE));
 

@@ -2,21 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
 use App\Models\Tag;
-use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Collection;
 
 class TagController extends Controller
 {
     public function index(Tag $tag)
     {
-        $posts = $tag
+        $items = $tag
             ->load([
                 'posts' => function ($query) {
                     return $query->where('publish', '=', 1);
-                },])
-            ->posts;
+                },
+                'news',
+            ]);
 
-        return view('post.list', compact('posts'));
+        $tagName = $tag->name;
+        $items = array_merge($items->posts->toArray(), $items->news->toArray());
+
+        return view('tag.list', compact('tagName', 'items'));
     }
 }

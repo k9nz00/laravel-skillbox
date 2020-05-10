@@ -5,18 +5,6 @@ namespace App\Helpers;
 class StringHelper
 {
     /**
-     * Замена пробелов на неразрывные
-     *
-     * @param string $txt
-     * @param int $limit не заменять при длине строки больше $limit, 0 - без ограничений
-     * @return string
-     */
-    public static function nobr($txt, $limit = 0)
-    {
-        return ((!$limit) || strlen($txt) < $limit) ? preg_replace('/\s+/', '&nbsp;', $txt) : $txt;
-    }
-
-    /**
      * Обрезает текст до нужной длины и подставляет в конце если нужно какие то символы, например '...'
      * Если обрезанный текст с добавленным вконце $ending будет длиннее чем исходный текст, то обрезание не производится.
      *
@@ -40,67 +28,6 @@ class StringHelper
     public static function trim($text)
     {
         return preg_replace('/^\s*(\S[\s\S]*\S)\s*$/m', '\\1', preg_replace('/(\p{Cf})/mu', '', $text));
-    }
-
-    /**
-     * Возвращает длину строки с учетом UTF-8
-     *
-     * @param string $text
-     * @return int
-     */
-    public static function strlen($text)
-    {
-        return mb_strlen($text, 'UTF-8');
-    }
-
-    /**
-     * Переводит текст в нижний регистр с учетом UTF-8
-     *
-     * @param string $text
-     * @return string
-     */
-    public static function lower($text)
-    {
-        return mb_strtolower($text, 'UTF-8');
-    }
-
-    /**
-     * Переводит текст в верхний регистр с учетом UTF-8
-     *
-     * @param string $text
-     * @return string
-     */
-    public static function upper($text)
-    {
-        return mb_strtoupper($text, 'UTF-8');
-    }
-
-    /**
-     * Аналог ucfirst с учетом UTF-8.
-     *
-     * Поднимает первую букву в верхний регистр
-     *
-     * @param string $text
-     * @return string
-     */
-    public static function ucfirst($text)
-    {
-        return (string)mb_strtoupper(mb_substr($text, 0, 1, 'UTF-8'), 'UTF-8') . mb_substr($text, 1, mb_strlen($text),
-                'UTF-8');
-    }
-
-    /**
-     * Аналог lcfirst с учетом UTF-8.
-     *
-     * Переводит первую букву в нижний регистр
-     *
-     * @param string $text
-     * @return string
-     */
-    public static function lcfirst($text)
-    {
-        return (string)mb_strtolower(mb_substr($text, 0, 1, 'UTF-8'), 'UTF-8') . mb_substr($text, 1, mb_strlen($text),
-                'UTF-8');
     }
 
     /**
@@ -217,7 +144,6 @@ class StringHelper
         }
         return $f5;
     }
-
 
     /**
      * Возвращает безопасную строку

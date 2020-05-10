@@ -25,9 +25,7 @@
                         Редактировать статью
                     </a>
                 @endisAdmin
-
-
-                    @include('post.chunks.deleteArticle')
+                @include('post.chunks.deleteArticle')
             </div>
         @endif
     </div>

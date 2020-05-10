@@ -16,6 +16,9 @@
                     <a class="nav-link" href="{{route('posts.create')}}">Создать статью</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="{{ route('news.index') }}">Все новости</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="{{route('about')}}">О нас</a>
                 </li>
                 <li class="nav-item">
@@ -29,7 +32,6 @@
                 </li>
             </ul>
         </div>
-
 
         @guest
             <div class="register-action">

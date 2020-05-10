@@ -13,38 +13,37 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
 
+
 /**
  * App\Models\Post
  *
  * @property int $id
- * @property string $title
- * @property string $body
+ * @property int $owner_id
  * @property string $slug
+ * @property string $title
+ * @property string $shortDescription
+ * @property string $body
+ * @property int $publish
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static Builder|\App\Models\Post newModelQuery()
- * @method static Builder|\App\Models\Post newQuery()
- * @method static Builder|\App\Models\Post query()
- * @method static Builder|\App\Models\Post whereBody($value)
- * @method static Builder|\App\Models\Post whereCreatedAt($value)
- * @method static Builder|\App\Models\Post whereId($value)
- * @method static Builder|\App\Models\Post whereSlug($value)
- * @method static Builder|\App\Models\Post whereTitle($value)
- * @method static Builder|\App\Models\Post whereUpdatedAt($value)
- * @mixin \Eloquent
- * @property string $shortDescription
- * @property int $publish
- * @method static Builder|\App\Models\Post wherePublish($value)
- * @method static Builder|\App\Models\Post whereShortDescription($value)
+ * @property-read \App\User $owner
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
  * @property-read int|null $tags_count
- * @property int $owner_id
- * @method static Builder|\App\Models\Post whereOwnerId($value)
- * @property-read \App\User $users
- * @property-read \App\User $user
- * @property-read \App\User $owner
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post postsForEmailNotify($dateFrom, $dateTo)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post getLastPublishedArticles()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post postsForEmailNotify($dateFrom, $dateTo)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereBody($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereOwnerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post wherePublish($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereShortDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Post extends Model
 {
@@ -61,13 +60,13 @@ class Post extends Model
     }
 
     /**
-     * Установка связи с таблицей тегов
+     * Установка полиморфной связи с таблицей тегов
      *
      * @return BelongsToMany
      */
     public function tags()
     {
-        return $this->belongsToMany(Tag::class);
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
     /**

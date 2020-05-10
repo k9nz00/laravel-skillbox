@@ -20,6 +20,10 @@
                 <td>Управление статьями</td>
                 <td><a href="{{route('admin.posts.index')}}">Панель управления постами</a></td>
             </tr>
+            <tr>
+                <td>Управление новостями</td>
+                <td><a href="{{ route('admin.news.index') }}">Панель управления новостями</a></td>
+            </tr>
             </tbody>
         </table>
     </div>
