@@ -116,19 +116,16 @@ class Post extends Model
     /**
      * Получить все опубликованные посты с тегами, которые к ним привязаны
      *
-     * @param int $postLimit
-     * @return Builder[]|Collection
+     * @return Builder
      */
-    public static function getLastPublishedArticlesWithTags(int $postLimit = 30)
+    public static function getLastPublishedArticlesWithTags()
     {
         return static::getLastPublishedArticles()
-            ->limit($postLimit)
             ->with([
                 'tags' => function ($query) {
                     $query->select('name');
                 },
-            ])
-            ->get(['id', 'title', 'slug', 'shortDescription', 'created_at']);
+            ]);
     }
 
     /**

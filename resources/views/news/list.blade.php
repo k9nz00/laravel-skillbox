@@ -11,5 +11,7 @@
         @foreach($news as $newsItem)
             @include('news.chunks.newsItem', ['newsItem'=>$newsItem])
         @endforeach
+
+        {{$news->links()}}
     </div>
 @endsection

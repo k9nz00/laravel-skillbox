@@ -7,8 +7,12 @@
             Список элементлов сайта с тегом - <span class="badge badge-info">{{$tagName}}</span>
         </h2>
         <?php /** @var $post App\Models\Post */ ?>
+
         @foreach($items as $item)
             @include('tag.chunks.item', ['item'=>$item])
         @endforeach
+
+        {{$items->links()}}
+
     </div>
 @endsection

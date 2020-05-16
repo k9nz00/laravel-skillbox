@@ -40,7 +40,10 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::getLastPublishedArticlesWithTags();
+
+        $posts = Post::getLastPublishedArticlesWithTags()
+            ->paginate(config('paginate.perPage'), ['id', 'title', 'slug', 'shortDescription', 'created_at'], 'postsPage');
+
         return view('post.list', compact('posts'));
     }
 

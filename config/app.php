@@ -176,8 +176,11 @@ return [
         App\Providers\TelescopeServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
+
+        //custom providers
         App\Providers\BladeServiceProvider::class,
-        App\Providers\PushAllServiceProvider::class
+        App\Providers\PushAllServiceProvider::class,
+        App\Providers\PaginationServiceProvider::class,
 
 
     ],
