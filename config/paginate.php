@@ -5,4 +5,5 @@
  */
 return [
     'perPage' => 5,
+    'perPageForAdminsPages' => 10,
 ];

@@ -3,12 +3,12 @@
 @endphp
 <tr>
     <?php /** @var $newsItem App\Models\News */ ?>
-    <th scope="row">{{$newsNumber}}</th>
+    <th scope="row">{{$newsItem->id}}</th>
     <td>{{$newsItem->title}}</td>
     <td>{{$newsItem->created_at->toDateTimeString()}}</td>
-    <td>
+    <td class="d-flex align-items-center justify-content-around">
         <a href="{{route('admin.news.edit', $newsItem->slug)}}" class="btn btn-outline-primary">Редактировать</a>
-        <a href="{{route('news.show', $newsItem->slug)}}" class="btn btn-outline-warning">Открыть в публичной части сайта</a>
+        <a href="{{route('news.show', $newsItem->slug)}}" class="btn btn-outline-warning">Открыть на сайте</a>
         @include('admin.news.chunks.deleteNews')
     </td>
 </tr>

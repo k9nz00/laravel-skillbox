@@ -23,9 +23,10 @@ class AdminNewsController extends Controller
     {
         $news = News::latest()
             ->with('tags')
-            ->get(['id', 'title', 'created_at', 'slug']);
+            ->simplePaginate(config('paginate.perPageForAdminsPages'), ['id', 'title', 'created_at', 'slug']);
+        $newsCount = News::count();
 
-        return view('admin.news.index', compact('news'));
+        return view('admin.news.index', compact('news', 'newsCount'));
     }
 
     /**

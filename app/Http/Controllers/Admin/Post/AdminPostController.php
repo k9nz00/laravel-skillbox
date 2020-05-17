@@ -22,8 +22,10 @@ class AdminPostController extends Controller
      */
     public function index()
     {
-        $posts = Post::latest()->get();
-        return view('admin.post.index', compact('posts'));
+        $posts = Post::latest()
+            ->simplePaginate(config('paginate.perPageForAdminsPages'), ['*']);
+        $postsCount = Post::count();
+        return view('admin.post.index', compact('posts', 'postsCount'));
     }
 
     /**
