@@ -21,6 +21,8 @@ Route::resource('/posts', 'Post\PostController');
  */
 
 Route::resource('/news', 'NewsController')->only(['index', 'show']);
+Route::post('/post/comment/store/{post}', 'CommentController@storeForPost')->name('post.comment.store');
+Route::post('/news/comment/store/{news}', 'CommentController@storeForNews')->name('news.comment.store');
 
 $adminGroupDataProperty = [
     'namespace' => 'Admin',

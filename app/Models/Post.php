@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Interfaces\Contentable;
 use App\User;
 use Carbon\Carbon;
 use DateTime;
@@ -26,6 +27,8 @@ use Illuminate\Support\Facades\Auth;
  * @property int $publish
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
+ * @property-read int|null $comments_count
  * @property-read \App\User $owner
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
  * @property-read int|null $tags_count
@@ -45,7 +48,7 @@ use Illuminate\Support\Facades\Auth;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class Post extends Model
+class Post extends Model implements Contentable
 {
     /**
      * Поля защищенные от массовой записи
@@ -78,6 +81,11 @@ class Post extends Model
     public function owner()
     {
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
     }
 
     /**
@@ -137,4 +145,14 @@ class Post extends Model
     {
         return static::wherePublish(1)->latest();
     }
+
+    /**
+     * @return false|string
+     */
+    public function getClass()
+    {
+      return get_called_class();
+    }
+
+
 }

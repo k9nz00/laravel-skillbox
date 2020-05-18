@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Interfaces\Contentable;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -19,6 +22,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
+ * @property-read int|null $comments_count
  * @property-read \App\User $owner
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
  * @property-read int|null $tags_count
@@ -41,7 +46,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Query\Builder|\App\Models\News withoutTrashed()
  * @mixin \Eloquent
  */
-class News extends Model
+class News extends Model implements Contentable
 {
     use SoftDeletes;
 
@@ -62,9 +67,26 @@ class News extends Model
         return $this->morphToMany(Tag::class, 'taggable');
     }
 
+    /**
+     * @return BelongsTo
+     */
     public function owner()
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
+
+    /**
+     * @return MorphMany
+     */
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function getClass()
+    {
+     return get_called_class();
+    }
+
 
 }

@@ -42,7 +42,8 @@ class PostController extends Controller
     {
 
         $posts = Post::getLastPublishedArticlesWithTags()
-            ->paginate(config('paginate.perPage'), ['id', 'title', 'slug', 'shortDescription', 'created_at'], 'postsPage');
+            ->paginate(config('paginate.perPage'), ['id', 'title', 'slug', 'shortDescription', 'created_at'],
+                'postsPage');
 
         return view('post.list', compact('posts'));
     }
@@ -55,6 +56,17 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
+        $post->load([
+            'comments' => function ($query) {
+                $query->with([
+                    'owner' => function ($queryOwner) {
+                        $queryOwner->select(['name', 'email', 'id']);
+                        return $queryOwner->get();
+                    },
+                ]);
+                return $query->latest();
+            },
+        ]);
         return view('post.show', compact('post'));
     }
 
