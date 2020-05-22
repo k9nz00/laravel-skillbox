@@ -2,16 +2,9 @@
 
 namespace App\Services;
 
-use App\Helpers\MessageHelpers;
-use App\Http\Requests\Post\StorePostRequest;
-use App\Http\Requests\Post\UpdatePostRequest;
-use App\Interfaces\Contentable;
 use App\Models\Comment;
-use App\Models\Post;
-use App\Models\Tag;
-use App\Services\ExternalServices\Pushall;
+use App\Models\Interfaces\Contentable;
 use Auth;
-use Exception;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CommentServices
@@ -35,6 +28,4 @@ class CommentServices
 
         return $comment;
     }
-
-
 }

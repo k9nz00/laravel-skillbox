@@ -56,17 +56,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        $post->load([
-            'comments' => function ($query) {
-                $query->with([
-                    'owner' => function ($queryOwner) {
-                        $queryOwner->select(['name', 'email', 'id']);
-                        return $queryOwner->get();
-                    },
-                ]);
-                return $query->latest();
-            },
-        ]);
+        $post->takeCommentsWithOwners(['id', 'name', 'email']);
         return view('post.show', compact('post'));
     }
 

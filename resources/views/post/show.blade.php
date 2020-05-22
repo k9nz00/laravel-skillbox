@@ -30,6 +30,7 @@
         @endif
 
         <div class="mt-3">Комментарии к статье:</div>
+        @include('layouts.layoutsChunk.errorsForm')
         @if(!Auth::check())
             <div class="mt-3">
                 Только авторизованные пользователи могут оставлять комментарии.<br>
@@ -40,12 +41,11 @@
         @endif
 
         @if(!empty($post->comments))
-            @foreach($post->comments as $comment)
-                <?php /** @var App\Models\Comment $comment */ ?>
-                <p>{{$comment->body}}</p>
-            @endforeach
+            <div class="">
+                @foreach($post->comments as $comment)
+                    @include('layouts.layoutsChunk.commentItem', ['comment'=>$comment])
+                @endforeach
+            </div>
         @endif
-
-
     </div>
 @endsection

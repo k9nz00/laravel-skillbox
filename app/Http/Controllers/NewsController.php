@@ -31,6 +31,7 @@ class NewsController extends Controller
      */
     public function show(News $news)
     {
+        $news->takeCommentsWithOwners(['id', 'name', 'email']);
         return view('news.show', compact('news'));
     }
 }

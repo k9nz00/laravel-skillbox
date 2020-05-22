@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use App\Interfaces\Contentable;
+use App\Models\Interfaces\Contentable;
+use App\Models\Traits\Contentable as ContentableTrait;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -49,6 +50,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class News extends Model implements Contentable
 {
     use SoftDeletes;
+    use ContentableTrait;
 
     protected $guarded = [];
 
@@ -87,6 +89,5 @@ class News extends Model implements Contentable
     {
      return get_called_class();
     }
-
 
 }
