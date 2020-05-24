@@ -29,7 +29,12 @@
             </div>
         @endif
 
-        <div class="mt-3">Комментарии к статье:</div>
+        @if($post->history)
+            <history-component :history='@json($post->history)'></history-component>
+        @else
+            <p class="mt-3 mb-3">нет истории изменения</p>
+        @endif
+
         @include('layouts.layoutsChunk.errorsForm')
         @if(!Auth::check())
             <div class="mt-3">

@@ -2,6 +2,7 @@
 
 Route::get('/', 'MainController@index')->name('home');
 Route::get('/contacts', 'MainController@contacts')->name('contacts');
+Route::get('/statistic', 'MainController@statistic')->name('statistic');
 Route::get('/about', 'MainController@about')->name('about');
 Route::post('contacts', 'MainController@storeMessageFromUser')->name('message.store');
 

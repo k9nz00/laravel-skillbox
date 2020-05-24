@@ -1,4 +1,4 @@
-<h3 class="comments-form-title mt-5">Написать комментарий</h3>
+<h3 class="comments-form-title mt-2">Написать комментарий</h3>
 <form action="{{route($route, $slug)}}" method="post">
     @csrf
     <div class="form-group">

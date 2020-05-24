@@ -6,11 +6,14 @@ namespace App\Models;
 use App\Models\Interfaces\Contentable;
 use App\Models\Traits\Contentable as ContentableTrait;
 use App\User;
+use Arr;
+use Auth;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
 
 /**
  * App\Models\Post
@@ -44,10 +47,27 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\User[] $history
+ * @property-read int|null $history_count
  */
 class Post extends Model implements Contentable
 {
     use ContentableTrait;
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::updating(function (Post $post) {
+
+            $after = $post->getDirty();
+            $before = Arr::only($post->fresh()->toArray(), array_keys($after));
+            $post->history()->attach(Auth::id(), [
+                'before'=> json_encode($before),
+                'after'=> json_encode($after),
+            ]);
+        });
+    }
 
     /**
      * Поля защищенные от массовой записи
@@ -148,5 +168,12 @@ class Post extends Model implements Contentable
     public function getClass()
     {
         return get_called_class();
+    }
+
+    public function history()
+    {
+        return $this->belongsToMany(User::class, 'post_histories')
+            ->withPivot(['before', 'after'])
+            ->withTimestamps();
     }
 }

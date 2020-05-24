@@ -25,6 +25,9 @@
                     <a class="nav-link" href="{{route('contacts')}}">Контакты</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="{{route('statistic')}}">Статистика</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="{{route('admin')}}">Админ. раздел</a>
                 </li>
                 <li class="nav-item">
