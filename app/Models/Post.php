@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-
 use App\Models\Interfaces\Contentable;
 use App\Models\Traits\Contentable as ContentableTrait;
 use App\User;
@@ -13,7 +12,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-
 
 /**
  * App\Models\Post
@@ -47,7 +45,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Post whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\User[] $history
+ * @property-read Collection|\App\User[] $history
  * @property-read int|null $history_count
  */
 class Post extends Model implements Contentable
@@ -61,6 +59,7 @@ class Post extends Model implements Contentable
         static::updating(function (Post $post) {
 
             $after = $post->getDirty();
+            unset($after['publish']);
             $before = Arr::only($post->fresh()->toArray(), array_keys($after));
             $post->history()->attach(Auth::id(), [
                 'before'=> json_encode($before),

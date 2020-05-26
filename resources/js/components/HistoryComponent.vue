@@ -2,48 +2,22 @@
     <div>
         <hr>
         <ul class="history-wrapper ">
-            <li class="history-item">
-                <a href="#" class="alert-link" title="k9nz00@yandex.ru">Andrey Semka</a>
-                <span>2 дня назад </span>
+            <li v-for="item in historyItems" class="history-item">
+                <a href="#" class="alert-link" :title="item.email">{{item.name}}</a>
+                <span>{{item.created_at}}</span>
                 <span>изменил статью</span>
                 <div class="w-100 history-body">
                     <div class="d-inline-block">
                         <p class="history-state">Было:</p>
-                        <span>Eum at officiis harum dolor nostrum deleniti. Sed reiciendis corrupti nulla</span>
+                        <span class="history-item-wrap" v-for="(historyItemValue, historyItemKey) in item.beforeValue">
+                            <span class="history-item-key">{{historyItemKey}}:</span><span class="history-item-value">{{historyItemValue}}</span>
+                        </span>
                     </div>
                     <div class="d-inline-block">
                         <p class="history-state">Стало:</p>
-                        <span>t necessitatibus quae quaerat praesentium numquam a quia. Optio aut aliquid velit impedit. Quos nobo</span>
-                    </div>
-                </div>
-            </li>
-            <li class="history-item">
-                <a href="#" class="alert-link" title="k9nz00@yandex.ru">Andrey Semka</a>
-                <span>2 дня назад </span>
-                <span>изменил статью</span>
-                <div class="w-100 history-body">
-                    <div class="d-inline-block">
-                        <p class="history-state">Было:</p>
-                        <span>Eum at officiis harum dolor nostrum deleniti. Sed reiciendis corrupti nulla</span>
-                    </div>
-                    <div class="d-inline-block">
-                        <p class="history-state">Стало:</p>
-                        <span>t necessitatibus quae quaerat praesentium numquam a quia. Optio aut aliquid velit impedit. Quos nobo</span>
-                    </div>
-                </div>
-            </li>
-            <li class="history-item">
-                <a href="#" class="alert-link" title="k9nz00@yandex.ru">Andrey Semka</a>
-                <span>2 дня назад </span>
-                <span>изменил статью</span>
-                <div class="w-100 history-body">
-                    <div class="d-inline-block">
-                        <p class="history-state">Было:</p>
-                        <span>Eum at officiis harum dolor nostrum deleniti. Sed reiciendis corrupti nulla</span>
-                    </div>
-                    <div class="d-inline-block">
-                        <p class="history-state">Стало:</p>
-                        <span>t necessitatibus quae quaerat praesentium numquam a quia. Optio aut aliquid velit impedit. Quos nobo</span>
+                        <span class="history-item-wrap" v-for="(historyItemValue, historyItemKey) in item.afterValue">
+                            <span class="history-item-key">{{historyItemKey}}:</span><span class="history-item-value">{{historyItemValue}}</span>
+                        </span>
                     </div>
                 </div>
             </li>
@@ -57,13 +31,19 @@
         name: 'HistoryComponent',
         props: ['history'],
         computed: {
-            testHistory() {
-                return JSON.parse(this.history)
-            }
-        },
-        methods: {
-            getHistory() {
-                console.log(this.history)
+            historyItems() {
+                let arr = []
+                this.history.forEach((item) => {
+                    let obj = {
+                        name: item.name,
+                        created_at: item.pivot.created_at,
+                        email: item.email,
+                        afterValue: JSON.parse(item.pivot.after),
+                        beforeValue: JSON.parse(item.pivot.before)
+                    }
+                    arr.push(obj)
+                })
+                return arr
             }
         }
     }
@@ -78,8 +58,8 @@
 
     .history-item {
         list-style: none;
-        padding-top: 3px;
-        padding-bottom: 4px;
+        padding-top: 15px;
+        padding-bottom: 0;
     }
 
     .history-item:hover {
@@ -95,5 +75,19 @@
 
     .history-body > div {
         width: 49%;
+    }
+
+    .history-item-wrap {
+        display: block;
+    }
+
+    .history-item-value {
+        font-style: italic;
+        color: #2a7048;
+    }
+
+    .history-item-key {
+        font-weight: 700;
+
     }
 </style>
