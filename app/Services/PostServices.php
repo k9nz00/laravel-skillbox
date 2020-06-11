@@ -14,6 +14,21 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class PostServices
 {
+
+    /**
+     * @var TagServices
+     */
+    protected $tagServices;
+
+    /**
+     * PostServices constructor.
+     */
+    public function __construct()
+    {
+        $this->tagServices = new TagServices();
+    }
+
+
     /**
      * Сохраняет новый пост в базе данных.
      * Возвращает объект сохраненного поста
@@ -21,7 +36,7 @@ class PostServices
      * @param StorePostRequest $storePostRequest
      * @return Post
      */
-    public function storePost(StorePostRequest $storePostRequest) : Post
+    public function storePost(StorePostRequest $storePostRequest): Post
     {
         $validatedData = $storePostRequest->validated();
         $post = Post::create(array_merge($validatedData, [
@@ -40,7 +55,7 @@ class PostServices
      * @param Post $post
      * @return Post
      */
-    public function updatePost(UpdatePostRequest $updatePostRequest, Post $post) : Post
+    public function updatePost(UpdatePostRequest $updatePostRequest, Post $post): Post
     {
         $validatedData = $updatePostRequest->validated();
         $post->update(array_merge($validatedData, [
@@ -71,10 +86,9 @@ class PostServices
      * @param Post $post
      * @return void
      */
-    public function addTagsToPost(FormRequest $formRequest, Post $post) : void
+    public function addTagsToPost(FormRequest $formRequest, Post $post): void
     {
-        $tagServices = new TagServices();
-        $tagsIds = $tagServices->getTagIdsForAttach($formRequest);
+        $tagsIds = $this->tagServices->getTagIdsForAttach($formRequest);
         $post->tags()->sync($tagsIds);
     }
 
@@ -87,8 +101,7 @@ class PostServices
      */
     public function updateTagsToPost(FormRequest $formRequest, Post $post): void
     {
-        $tagServices = new TagServices();
-        $tagsIds = $tagServices->getTagIdsForUpdate($formRequest, $post);
+        $tagsIds = $this->tagServices->getTagIdsForUpdate($formRequest, $post);
         $post->tags()->sync($tagsIds);
     }
 
