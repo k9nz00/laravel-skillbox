@@ -14,9 +14,9 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(User::class, 5)->create()
+        factory(User::class, 10)->create()
             ->each(function (User $user) {
-                $user->posts()->saveMany(factory(Post::class, 10)->make());
+                $user->posts()->saveMany(factory(Post::class, 15)->make());
                 $posts = $user->posts;
                 $tags = Tag::all()->pluck('id')->toArray();
                 foreach ($posts as $post) {

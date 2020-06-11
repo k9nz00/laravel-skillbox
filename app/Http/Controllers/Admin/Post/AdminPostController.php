@@ -22,8 +22,10 @@ class AdminPostController extends Controller
      */
     public function index()
     {
-        $posts = Post::latest()->get();
-        return view('admin.post.index', compact('posts'));
+        $posts = Post::latest()
+            ->simplePaginate(config('paginate.perPageForAdminsPages'), ['*']);
+        $postsCount = Post::count();
+        return view('admin.post.index', compact('posts', 'postsCount'));
     }
 
     /**
@@ -46,10 +48,10 @@ class AdminPostController extends Controller
     public function store(StorePostRequest $storePostRequest, PostServices $postServices)
     {
         $post = $postServices->storePost($storePostRequest);
-        $postWithTags = $postServices->addTagsToPost($storePostRequest, $post);
-        $postServices->sendNotificationsViaPushall($postWithTags->title); //телом push-уведомления является заголовок статьи
+        $postServices->addTagsToPost($storePostRequest, $post);
+        $postServices->sendNotificationsViaPushall($post->title); //телом push-уведомления является заголовок статьи
 
-        $messageAboutCreate = 'Статья ' . $postWithTags->title . ' успешно создана';
+        $messageAboutCreate = 'Статья ' . $post->title . ' успешно создана';
         MessageHelpers::flashMessage($messageAboutCreate);
         return redirect()->route('admin.posts.index');
     }
@@ -76,9 +78,9 @@ class AdminPostController extends Controller
     public function update(UpdatePostRequest $updatePostRequest, Post $post, PostServices $postServices)
     {
         $updatedPost = $postServices->updatePost($updatePostRequest, $post);
-        $updatedPostWithNewTags = $postServices->updateTagsToPost($updatePostRequest, $updatedPost);
+        $postServices->updateTagsToPost($updatePostRequest, $updatedPost);
 
-        $messageAboutUpdate = 'Статья ' . $updatedPostWithNewTags->title . ' успешно обновлена';
+        $messageAboutUpdate = 'Статья ' . $updatedPost->title . ' успешно обновлена';
         MessageHelpers::flashMessage($messageAboutUpdate, 'info');
 
         return redirect()->route('admin.posts.index', $post->slug);

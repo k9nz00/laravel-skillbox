@@ -17,17 +17,39 @@
         @if(Gate::allows('isAccessToEdit',$post))
             <div class="service-block mt-2">
                 @isAdmin
-                    <a href="{{route('admin.posts.edit', $post->slug)}}" class="btn btn-outline-primary">
-                        Редактировать статью
-                    </a>
+                <a href="{{route('admin.posts.edit', $post->slug)}}" class="btn btn-outline-primary">
+                    Редактировать статью
+                </a>
                 @else
                     <a href="{{route('posts.edit', $post->slug)}}" class="btn btn-outline-primary">
                         Редактировать статью
                     </a>
-                @endisAdmin
-
-
+                    @endisAdmin
                     @include('post.chunks.deleteArticle')
+            </div>
+        @endif
+
+        @if($post->history)
+            <history-component :history='@json($post->history)'></history-component>
+        @else
+            <p class="mt-3 mb-3">нет истории изменения</p>
+        @endif
+
+        @include('layouts.layoutsChunk.errorsForm')
+        @if(!Auth::check())
+            <div class="mt-3">
+                Только авторизованные пользователи могут оставлять комментарии.<br>
+                Пожалуйста авторизуйтесь!
+            </div>
+        @else
+            @include('layouts.layoutsChunk.createCommentForm', ['route'=>'post.comment.store', 'slug'=>$post->slug])
+        @endif
+
+        @if(!empty($post->comments))
+            <div class="">
+                @foreach($post->comments as $comment)
+                    @include('layouts.layoutsChunk.commentItem', ['comment'=>$comment])
+                @endforeach
             </div>
         @endif
     </div>

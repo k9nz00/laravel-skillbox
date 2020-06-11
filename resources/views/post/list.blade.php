@@ -10,5 +10,7 @@
         @foreach($posts as $post)
             @include('post.chunks.post', ['post'=>$post])
         @endforeach
+
+        {{$posts->links()}}
     </div>
 @endsection

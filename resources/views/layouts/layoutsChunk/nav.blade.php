@@ -16,10 +16,16 @@
                     <a class="nav-link" href="{{route('posts.create')}}">Создать статью</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="{{ route('news.index') }}">Все новости</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="{{route('about')}}">О нас</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{route('contacts')}}">Контакты</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{route('statistic')}}">Статистика</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{route('admin')}}">Админ. раздел</a>
@@ -29,7 +35,6 @@
                 </li>
             </ul>
         </div>
-
 
         @guest
             <div class="register-action">

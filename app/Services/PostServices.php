@@ -7,12 +7,9 @@ use App\Http\Requests\Post\StorePostRequest;
 use App\Http\Requests\Post\UpdatePostRequest;
 use App\Models\Post;
 use App\Models\Tag;
-use App\Notifications\PostNotafication\ChangePostStateNotification;
 use App\Services\ExternalServices\Pushall;
-use App\User;
 use Auth;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PostServices
@@ -72,18 +69,13 @@ class PostServices
      *
      * @param FormRequest $formRequest
      * @param Post $post
-     * @return Post
+     * @return void
      */
-    public function addTagsToPost(FormRequest $formRequest, Post $post)
+    public function addTagsToPost(FormRequest $formRequest, Post $post) : void
     {
-        $tagsIds = [];
-        $tagsToAttach = explode(', ', $formRequest->tags);
-        foreach ($tagsToAttach as $tagToAttach) {
-            $tagToAttach = Tag::firstOrCreate(['name' => $tagToAttach]);
-            $tagsIds[] = $tagToAttach->id;
-        }
+        $tagServices = new TagServices();
+        $tagsIds = $tagServices->getTagIdsForAttach($formRequest);
         $post->tags()->sync($tagsIds);
-        return $post;
     }
 
     /**
@@ -91,27 +83,13 @@ class PostServices
      *
      * @param FormRequest $formRequest
      * @param Post $post
-     * @return Post
+     * @return void
      */
-    public function updateTagsToPost(FormRequest $formRequest, Post $post)
+    public function updateTagsToPost(FormRequest $formRequest, Post $post): void
     {
-        $existTagsFromPost = $post->tags->keyBy('name');
-        $tagsForPost = collect(explode(', ', $formRequest->tags))
-            ->keyBy(function ($item) {
-                return $item;
-            });
-        $tagsIdsForSync = $existTagsFromPost
-            ->intersectByKeys($tagsForPost)
-            ->pluck('id')
-            ->toArray();
-
-        $tagsToAttach = $tagsForPost->diffKeys($existTagsFromPost);
-        foreach ($tagsToAttach as $tagToAttach) {
-            $tagToAttach = Tag::firstOrCreate(['name' => $tagToAttach]);
-            $tagsIdsForSync[] = $tagToAttach->id;
-        }
-        $post->tags()->sync($tagsIdsForSync);
-        return $post;
+        $tagServices = new TagServices();
+        $tagsIds = $tagServices->getTagIdsForUpdate($formRequest, $post);
+        $post->tags()->sync($tagsIds);
     }
 
     /**
