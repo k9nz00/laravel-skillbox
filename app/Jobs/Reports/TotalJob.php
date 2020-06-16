@@ -9,6 +9,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Mail;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 /**
  *
@@ -53,7 +55,10 @@ class TotalJob implements ShouldQueue
      */
     public function handle()
     {
-        Mail::to($this->toUserMail)->send(new TotalReport($this->getCountInstances($this->instances)));
+        $this->generateReportToXLS();
+
+        Mail::to($this->toUserMail)
+            ->send(new TotalReport($this->getCountInstances($this->instances)));
     }
 
     /**
@@ -69,5 +74,16 @@ class TotalJob implements ShouldQueue
             $instancesCount[$instance] = $instance::count();
         }
         return $instancesCount;
+    }
+
+    public function generateReportToXLS()
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setCellValue('A1', 'Hello World !');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save( storage_path('reports/totalReports/hello_world.xlsx'));
+
     }
 }
