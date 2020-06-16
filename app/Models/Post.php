@@ -169,6 +169,12 @@ class Post extends Model implements Contentable
         return get_called_class();
     }
 
+    public static function getLabelClass(): string
+    {
+       return 'Статьи';
+    }
+
+
     public function history()
     {
         return $this->belongsToMany(User::class, 'post_histories')

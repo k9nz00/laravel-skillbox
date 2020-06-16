@@ -15,21 +15,21 @@
     <p>
         По вашему запросу был сформироваан и отправлен на почту отчет с подсчетом количества разлиных сущностей на сайте.
         Ниже представлен сформированный отсчет в теле этого сообщения.
-        Также к письму должен быть приложен этот отчет в виде Exel и PDF.
+        Также к письму должен быть приложен этот отчет в виде Exel.
     </p>
     <div class="">
         <table class="table">
             <thead>
             <tr>
-                <th scope="col">Сущность</th>
-                <th scope="col">Сколько элеменов на сайте</th>
+                <th scope="col">Наименование</th>
+                <th scope="col">Количество</th>
             </tr>
             </thead>
             <tbody>
-            @foreach($instances as $instanceName => $instanceCount)
+            @foreach($instances as $instance)
                 <tr>
-                    <th>{{$instanceName}}</th>
-                    <td>{{$instanceCount}}</td>
+                    <th>{{$instance[0]}}</th>
+                    <td>{{$instance[1]}}</td>
                 </tr>
             @endforeach
             </tbody>

@@ -90,4 +90,10 @@ class News extends Model implements Contentable
      return get_called_class();
     }
 
+    public static function getLabelClass(): string
+    {
+       return 'Новости';
+    }
+
+
 }

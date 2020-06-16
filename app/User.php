@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\Comment;
+use App\Models\Interfaces\Contentable;
 use App\Models\Post;
 use App\Models\Role;
 use Auth;
@@ -47,7 +48,7 @@ use Illuminate\Notifications\Notifiable;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
  * @property-read int|null $comments_count
  */
-class User extends Authenticatable
+class User extends Authenticatable implements Contentable
 {
     use Notifiable;
 
@@ -149,4 +150,16 @@ class User extends Authenticatable
         }
         return false;
     }
+
+    public function getClass()
+    {
+        return get_called_class();
+    }
+
+    public static function getLabelClass(): string
+    {
+      return 'Пользователи';
+    }
+
+
 }

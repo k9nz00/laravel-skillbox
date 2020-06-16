@@ -13,7 +13,7 @@
         <form action="{{route('admin.reports.total.generate')}}" method="POST">
             <div class="form-group">
                 @csrf
-                <label for="reportsItems">Выберите пункты для формирования отчет</label>
+                <label for="reportsItems">Выберите пункты для формирования отчета</label>
                 <select
                     multiple
                     size="{{count($instances)}}"

@@ -3,6 +3,7 @@
 namespace App\Jobs\Reports;
 
 use App\Mail\Reports\TotalReport;
+use App\Models\Interfaces\Contentable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -52,13 +53,13 @@ class TotalJob implements ShouldQueue
      * Execute the job.
      *
      * @return void
+     * @throws \Exception
      */
     public function handle()
     {
-        $this->generateReportToXLS();
-
+        $report = $this->generateReport($this->getCountInstances($this->instances));
         Mail::to($this->toUserMail)
-            ->send(new TotalReport($this->getCountInstances($this->instances)));
+            ->send(new TotalReport($this->getCountInstances($this->instances), $report));
     }
 
     /**
@@ -71,19 +72,51 @@ class TotalJob implements ShouldQueue
     {
         $instancesCount = [];
         foreach ($instances as $instance) {
-            $instancesCount[$instance] = $instance::count();
+            $instancesCount[] = [
+                $instance::getLabelClass(),
+                $instance::count(),
+            ];
         }
         return $instancesCount;
     }
 
-    public function generateReportToXLS()
+    /**
+     * Создает файл .xls  для отчет и возвращает путь к нему
+     *
+     * @param array $data
+     * @return string
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws \Exception
+     */
+    public function generateReport(array $data): string
     {
+        array_unshift($data, ['Наименование', 'Количество']);
+
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setCellValue('A1', 'Hello World !');
+        $sheet->fromArray($data);
 
         $writer = new Xlsx($spreadsheet);
-        $writer->save( storage_path('reports/totalReports/hello_world.xlsx'));
+        $pathToReport = 'reports/totalReports/report' . date('_Y_m_d_H_i') . '.xlsx';
+        $writer->save(storage_path($pathToReport));
 
+        return $this->getPathToReport($pathToReport);
+    }
+
+    /**
+     * Проверяет существование файла по указанному пути
+     * В случае успеха возвращает путь к нему
+     *
+     * @param $pathToReport
+     * @return string
+     * @throws \Exception
+     */
+    public function getPathToReport($pathToReport): string
+    {
+        if (file_exists(storage_path($pathToReport))) {
+            return storage_path($pathToReport);
+        } else {
+            throw new \Exception('Файла по адресу ' . $pathToReport . ' не существует');
+        }
     }
 }

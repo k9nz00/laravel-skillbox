@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Interfaces\Contentable;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,7 +30,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property-read \App\User $owner
  */
-class Comment extends Model
+class Comment extends Model implements Contentable
 {
     protected $guarded = [];
 
@@ -44,4 +45,16 @@ class Comment extends Model
         return $this->belongsTo(User::class, 'owner_id');
 
     }
+
+    public function getClass()
+    {
+        return get_called_class();
+    }
+
+    public static function getLabelClass(): string
+    {
+        return 'Комментарии';
+    }
+
+
 }
