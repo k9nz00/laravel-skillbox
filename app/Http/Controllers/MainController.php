@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SomethingHappens;
 use App\Models\Admin\Feedback;
 use App\Models\News;
 use App\Models\Post;
@@ -130,19 +131,19 @@ class MainController extends Controller
             ],
             'averageCountPosts' => round($averageCountPostsOfActiveUser, 2),
             'postHasMaximumChanges' => [
-                'title'=> $postHasMaximumChanges->title,
-                'slug'=> $postHasMaximumChanges->slug,
-                'count'=> $postHasMaximumChanges->history_count,
+                'title' => $postHasMaximumChanges->title,
+                'slug' => $postHasMaximumChanges->slug,
+                'count' => $postHasMaximumChanges->history_count,
             ],
             'postHasMaximumComments' => [
-                'title'=> $postHasMaximumComments->title,
-                'slug'=> $postHasMaximumComments->slug,
-                'count'=> $postHasMaximumComments->comments_count,
+                'title' => $postHasMaximumComments->title,
+                'slug' => $postHasMaximumComments->slug,
+                'count' => $postHasMaximumComments->comments_count,
             ],
             'tagsCount' => $tagsCount,
             'mostPopularTagWithPosts' => [
                 'name' => $mostPopularTagWithPosts->name,
-                'count'=> $mostPopularTagWithPosts->posts_count,
+                'count' => $mostPopularTagWithPosts->posts_count,
             ]
         ];
 

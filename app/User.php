@@ -52,6 +52,8 @@ class User extends Authenticatable implements Contentable
 {
     use Notifiable;
 
+    const ROLE_ADMIN = 'admin';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -81,18 +83,6 @@ class User extends Authenticatable implements Contentable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-//    /**
-//     * Проверка на админские права.
-//     * Пока как заглушка пользователь с id=1 считается администратором
-//     *
-//     * @return bool
-//     */
-//    public function isAdmin()
-//    {
-//        //переделать
-//        return $this->id == 1 ? true : false;
-//    }
 
     /**
      * Получить пользователя правами администраторов
@@ -138,17 +128,8 @@ class User extends Authenticatable implements Contentable
      */
     public function isAdmin()
     {
-        $roles = $this->roles()->where('name','=',  'admin')->get();
-        foreach ($roles as $role)
-        {
-            /** @var $role Role */
-            $roleName = $role->name;
-            if ($roleName == 'admin')
-            {
-                return true;
-            }
-        }
-        return false;
+        $roles = $this->roles()->where('name', '=', 'admin')->pluck('name');
+        return in_array(self::ROLE_ADMIN, $roles->all());
     }
 
     public function getClass()
@@ -158,7 +139,7 @@ class User extends Authenticatable implements Contentable
 
     public static function getLabelClass(): string
     {
-      return 'Пользователи';
+        return 'Пользователи';
     }
 
 
