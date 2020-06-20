@@ -46,11 +46,6 @@ class Comment extends Model implements Contentable
 
     }
 
-    public function getClass()
-    {
-        return get_called_class();
-    }
-
     public static function getLabelClass(): string
     {
         return 'Комментарии';

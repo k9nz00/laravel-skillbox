@@ -4,8 +4,6 @@ namespace App\Models\Interfaces;
 
 interface Contentable
 {
-    public function getClass();
-
     /**
      * Возвращвает "красивое" имя модели для записи в отчеты
      *

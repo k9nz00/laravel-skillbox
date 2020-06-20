@@ -75,7 +75,7 @@ class TotalJob implements ShouldQueue
         $instancesCount = [];
         foreach ($this->instances as $instance) {
             $instancesCount[] = [
-                $instance::getLabelClass(),
+                __('reportsClassName.' . $instance),
                 $instance::count(),
             ];
         }

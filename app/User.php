@@ -132,11 +132,6 @@ class User extends Authenticatable implements Contentable
         return in_array(self::ROLE_ADMIN, $roles->all());
     }
 
-    public function getClass()
-    {
-        return get_called_class();
-    }
-
     public static function getLabelClass(): string
     {
         return 'Пользователи';

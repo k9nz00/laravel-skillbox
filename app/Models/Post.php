@@ -167,11 +167,6 @@ class Post extends Model implements Contentable
         return static::wherePublish(1)->latest();
     }
 
-    public function getClass()
-    {
-        return get_called_class();
-    }
-
     public static function getLabelClass(): string
     {
        return 'Статьи';

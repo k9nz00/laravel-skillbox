@@ -13,19 +13,13 @@ use App\Models\Tag;
 use App\User;
 use Auth;
 use Illuminate\Http\Request;
+use Lang;
 
 class TotalReportController extends Controller
 {
     public function index()
     {
-        $instances = [
-            News::class => 'Новости',
-            Post::class => 'Статьи',
-            Comment::class => 'Комментарии',
-            Tag::class => 'Теги',
-            User::class => 'Пользователи'
-        ];
-
+        $instances = require resource_path('lang/ru/reportsClassName.php');
         return view('admin.report.reports.total', compact('instances'));
     }
 
