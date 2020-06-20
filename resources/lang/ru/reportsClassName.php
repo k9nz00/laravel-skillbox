@@ -7,9 +7,9 @@ use App\Models\Tag;
 use App\User;
 
 return [
-    Comment::class => 'Комментариев',
-    News::class => 'Новостей',
-    Post::class => 'Статей',
-    Tag::class => 'Тегов',
-    User::class => 'Пользователей',
+    Comment::class => 'Комментарии',
+    News::class => 'Новости',
+    Post::class => 'Статьи',
+    Tag::class => 'Теги',
+    User::class => 'Пользователи',
 ];
