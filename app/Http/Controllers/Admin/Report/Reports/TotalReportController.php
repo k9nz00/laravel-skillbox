@@ -2,15 +2,9 @@
 
 namespace App\Http\Controllers\Admin\Report\Reports;
 
-use App\Events\UpdatePost;
 use App\Helpers\MessageHelpers;
 use App\Http\Controllers\Controller;
 use App\Jobs\Reports\TotalJob;
-use App\Models\Comment;
-use App\Models\News;
-use App\Models\Post;
-use App\Models\Tag;
-use App\User;
 use Auth;
 use Illuminate\Http\Request;
 use Lang;
@@ -19,7 +13,7 @@ class TotalReportController extends Controller
 {
     public function index()
     {
-        $instances = require resource_path('lang/ru/reportsClassName.php');
+        $instances = Lang::get('reportsClassName');
         return view('admin.report.reports.total', compact('instances'));
     }
 
