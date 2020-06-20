@@ -34,4 +34,5 @@ const app = new Vue({
     el: '#app',
 });
 
-require('./echo');
+require('./notifyAboutChangePost');
+require('./reportToDisplay');

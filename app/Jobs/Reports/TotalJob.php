@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Reports;
 
+use App\Events\TotalReportTextEvent;
 use App\Mail\Reports\TotalReport;
 use App\Models\Interfaces\Contentable;
 use Illuminate\Bus\Queueable;
@@ -57,9 +58,10 @@ class TotalJob implements ShouldQueue
      */
     public function handle()
     {
-        $report = $this->generateReport($this->getCountInstances($this->instances));
+        $report = $this->generateReport($this->getCountInstances());
+        event(new TotalReportTextEvent($this->addTitleToReport($this->getCountInstances())));
         Mail::to($this->toUserMail)
-            ->send(new TotalReport($this->getCountInstances($this->instances), $report));
+            ->send(new TotalReport($this->getCountInstances(), $report));
     }
 
     /**
@@ -68,10 +70,10 @@ class TotalJob implements ShouldQueue
      * @param array $instances
      * @return array
      */
-    public function getCountInstances(array $instances): array
+    public function getCountInstances(): array
     {
         $instancesCount = [];
-        foreach ($instances as $instance) {
+        foreach ($this->instances as $instance) {
             $instancesCount[] = [
                 $instance::getLabelClass(),
                 $instance::count(),
@@ -90,8 +92,7 @@ class TotalJob implements ShouldQueue
      */
     public function generateReport(array $data): string
     {
-        array_unshift($data, ['Наименование', 'Количество']);
-
+        $data = $this->addTitleToReport($data);
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->fromArray($data);
@@ -101,6 +102,16 @@ class TotalJob implements ShouldQueue
         $writer->save(storage_path($pathToReport));
 
         return $this->getPathToReport($pathToReport);
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    public function addTitleToReport(array $data)
+    {
+        array_unshift($data, ['Наименование', 'Количество']);
+        return $data;
     }
 
     /**

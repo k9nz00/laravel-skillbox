@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Report\Reports;
 
+use App\Events\UpdatePost;
 use App\Helpers\MessageHelpers;
 use App\Http\Controllers\Controller;
 use App\Jobs\Reports\TotalJob;

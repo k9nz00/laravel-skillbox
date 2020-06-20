@@ -17,7 +17,6 @@
 <body>
 
 <div id="app">
-
     @section('navBar')
         @include('layouts.layoutsChunk.nav')
     @show
