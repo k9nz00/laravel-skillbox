@@ -37,3 +37,4 @@ const app = new Vue({
 require('./notifyAboutChangePost');
 require('./reportToDisplay');
 require('./formHandlers/reports/totalReport');
+require('./formHandlers/posts/editPost');
