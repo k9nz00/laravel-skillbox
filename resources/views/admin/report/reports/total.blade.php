@@ -10,7 +10,8 @@
             В сформированнои отчете будет произведен подсчет количества элементов для выбранных пунктов select'a<br> <b>(Можно
                 выбрать несколько)</b>
         </p>
-        <form action="{{route('admin.reports.total.generate')}}" method="POST">
+        <div class="messageAboutReportStatus"></div>
+        <form action="{{route('admin.reports.total.generate')}}" method="POST" id="reportForm">
             <div class="form-group">
                 @csrf
                 <label for="reportsItems">Выберите пункты для формирования отчета</label>

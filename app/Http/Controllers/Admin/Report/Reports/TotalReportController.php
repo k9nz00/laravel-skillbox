@@ -18,15 +18,24 @@ class TotalReportController extends Controller
         return view('admin.report.reports.total', compact('instances'));
     }
 
+    /**
+     * @param Request $request
+     * @return array
+     */
     public function generateReport(Request $request)
     {
-        $reportInstances = new ReportInstances($request->input('instances'));
+        $instances = $request->input('instances');
+        $response = [];
 
-        if (!empty($reportInstances->instances)) {
+        if ($instances) {
+            $reportInstances = new ReportInstances($instances);
             TotalJob::dispatch($reportInstances, Auth::user()->email);
-            $messageAboutCreate = 'Ваш отчет был добавлен в очередь генерации отчетов. Когда он будет сгененрирован будет произведена отправка на e-mail';
-            MessageHelpers::flashMessage($messageAboutCreate);
+            $response['message'] = 'Ваш отчет был добавлен в очередь генерации отчетов. Когда он будет сгененрирован будет произведена отправка на e-mail';
+            $response['style'] = 'alert-success';
+        } else {
+            $response['message'] = 'Не выбран ни один пункт для формирования отчета.';
+            $response['style'] = 'alert-danger';
         }
-        return back();
+        return $response;
     }
 }
