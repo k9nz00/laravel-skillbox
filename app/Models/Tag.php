@@ -79,11 +79,4 @@ class Tag extends Model implements Contentable
         })->get();
         return $tags;
     }
-
-    public static function getLabelClass(): string
-    {
-        return 'Теги';
-    }
-
-
 }

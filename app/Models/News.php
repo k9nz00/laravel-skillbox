@@ -84,11 +84,4 @@ class News extends Model implements Contentable
     {
         return $this->morphMany(Comment::class, 'commentable');
     }
-
-    public static function getLabelClass(): string
-    {
-       return 'Новости';
-    }
-
-
 }

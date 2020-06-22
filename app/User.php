@@ -128,14 +128,7 @@ class User extends Authenticatable implements Contentable
      */
     public function isAdmin()
     {
-        $roles = $this->roles()->where('name', '=', 'admin')->pluck('name');
-        return in_array(self::ROLE_ADMIN, $roles->all());
+        return $this->roles()->where('name', '=', self::ROLE_ADMIN)->exists();
     }
-
-    public static function getLabelClass(): string
-    {
-        return 'Пользователи';
-    }
-
 
 }

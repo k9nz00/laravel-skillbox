@@ -13,6 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Mail;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Storage;
 
 /**
  *
@@ -98,7 +99,7 @@ class TotalJob implements ShouldQueue
         $sheet->fromArray($data);
 
         $writer = new Xlsx($spreadsheet);
-        $pathToReport = 'reports/totalReports/report' . date('_Y_m_d_H_i') . '.xlsx';
+        $pathToReport = 'reports/totalReports/report' . date('_Y_m_d_H:i') . '.xlsx';
         $writer->save(storage_path($pathToReport));
 
         return $this->getPathToReport($pathToReport);
@@ -124,7 +125,7 @@ class TotalJob implements ShouldQueue
      */
     public function getPathToReport($pathToReport): string
     {
-        if (file_exists(storage_path($pathToReport))) {
+        if (Storage::disk('root')->exists($pathToReport)) {
             return storage_path($pathToReport);
         } else {
             throw new \Exception('Файла по адресу ' . $pathToReport . ' не существует');

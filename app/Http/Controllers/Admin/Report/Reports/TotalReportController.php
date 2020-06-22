@@ -20,10 +20,11 @@ class TotalReportController extends Controller
     public function generateReport(Request $request)
     {
         $instances = $request->input('instances');
-        TotalJob::dispatch($instances, Auth::user()->email);
-
-        $messageAboutCreate = 'Ваш отчет был добавлен в очередь генерации отчетов. Когда он будет сгененрирован будет произведена отправка на e-mail';
-        MessageHelpers::flashMessage($messageAboutCreate);
+        if (!empty($instances)) {
+            TotalJob::dispatch($instances, Auth::user()->email);
+            $messageAboutCreate = 'Ваш отчет был добавлен в очередь генерации отчетов. Когда он будет сгененрирован будет произведена отправка на e-mail';
+            MessageHelpers::flashMessage($messageAboutCreate);
+        }
         return back();
     }
 }

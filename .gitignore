@@ -20,5 +20,6 @@ routeList.txt
 /public/js/
 /public/css/
 /public/mix-manifest.json
-/storage/reports/*
+/storage/reports/totalReports/*
 laravel-echo-server.lock
+!/storage/reports/totalReports/.gitignore

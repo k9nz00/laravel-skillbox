@@ -45,11 +45,4 @@ class Comment extends Model implements Contentable
         return $this->belongsTo(User::class, 'owner_id');
 
     }
-
-    public static function getLabelClass(): string
-    {
-        return 'Комментарии';
-    }
-
-
 }
