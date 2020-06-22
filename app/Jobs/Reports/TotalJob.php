@@ -5,6 +5,7 @@ namespace App\Jobs\Reports;
 use App\Events\TotalReportTextEvent;
 use App\Mail\Reports\TotalReport;
 use App\Models\Interfaces\Contentable;
+use App\Services\ReportServices\ReportInstances;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -30,9 +31,9 @@ class TotalJob implements ShouldQueue
     /**
      * Массив с классами для которых необходимо сформировать отчет
      *
-     * @var array
+     * @var ReportInstances
      */
-    protected $instances;
+    protected $reportInstances;
 
     /**
      * @var string получатель письма
@@ -42,12 +43,12 @@ class TotalJob implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param array $instances
+     * @param ReportInstances $reportInstances
      * @param string $toUserMail
      */
-    public function __construct(array $instances, string $toUserMail)
+    public function __construct(ReportInstances $reportInstances, string $toUserMail)
     {
-        $this->instances = $instances;
+        $this->reportInstances = $reportInstances;
         $this->toUserMail = $toUserMail;
     }
 
@@ -74,7 +75,7 @@ class TotalJob implements ShouldQueue
     public function getCountInstances(): array
     {
         $instancesCount = [];
-        foreach ($this->instances as $instance) {
+        foreach ($this->reportInstances->instances as $instance) {
             $instancesCount[] = [
                 __('reportsClassName.' . $instance),
                 $instance::count(),
