@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\Comment;
+use App\Models\Interfaces\Contentable;
 use App\Models\Post;
 use App\Models\Role;
 use Auth;
@@ -47,9 +48,11 @@ use Illuminate\Notifications\Notifiable;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
  * @property-read int|null $comments_count
  */
-class User extends Authenticatable
+class User extends Authenticatable implements Contentable
 {
     use Notifiable;
+
+    const ROLE_ADMIN = 'admin';
 
     /**
      * The attributes that are mass assignable.
@@ -80,18 +83,6 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-//    /**
-//     * Проверка на админские права.
-//     * Пока как заглушка пользователь с id=1 считается администратором
-//     *
-//     * @return bool
-//     */
-//    public function isAdmin()
-//    {
-//        //переделать
-//        return $this->id == 1 ? true : false;
-//    }
 
     /**
      * Получить пользователя правами администраторов
@@ -137,16 +128,7 @@ class User extends Authenticatable
      */
     public function isAdmin()
     {
-        $roles = $this->roles()->where('name','=',  'admin')->get();
-        foreach ($roles as $role)
-        {
-            /** @var $role Role */
-            $roleName = $role->name;
-            if ($roleName == 'admin')
-            {
-                return true;
-            }
-        }
-        return false;
+        return $this->roles()->where('name', '=', self::ROLE_ADMIN)->exists();
     }
+
 }

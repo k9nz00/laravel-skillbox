@@ -9,7 +9,7 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
-Vue.use(moment)
+Vue.use(moment);
 
 /**
  * The following block of code may be used to automatically register your
@@ -33,3 +33,8 @@ Vue.component('history-component', require('./components/HistoryComponent.vue').
 const app = new Vue({
     el: '#app',
 });
+
+require('./notifyAboutChangePost');
+require('./reportToDisplay');
+require('./formHandlers/reports/totalReport');
+require('./formHandlers/posts/editPost');

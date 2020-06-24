@@ -24,6 +24,10 @@
                 <td>Управление новостями</td>
                 <td><a href="{{ route('admin.news.index') }}">Панель управления новостями</a></td>
             </tr>
+            <tr>
+                <td>Отчеты</td>
+                <td><a href="{{ route('admin.reports') }}">Отчеты для администратора</a></td>
+            </tr>
             </tbody>
         </table>
     </div>

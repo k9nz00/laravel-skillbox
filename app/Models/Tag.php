@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Interfaces\Contentable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -27,7 +28,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tag whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class Tag extends Model
+class Tag extends Model implements Contentable
 {
     /**
      * Защита поля защиненные от массового заполнения

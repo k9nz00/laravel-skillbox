@@ -84,10 +84,4 @@ class News extends Model implements Contentable
     {
         return $this->morphMany(Comment::class, 'commentable');
     }
-
-    public function getClass()
-    {
-     return get_called_class();
-    }
-
 }

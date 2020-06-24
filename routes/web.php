@@ -40,6 +40,14 @@ Route::group($adminGroupDataProperty, function () {
     Route::resource('/news', 'News\AdminNewsController')
         ->except(['show'])
         ->names('admin.news');
+
+    Route::get('/reports', 'Report\ReportController@index')->name('admin.reports');
+    Route::group(['namespace'=>'Report\Reports', 'prefix'=>'/reports'], function (){
+
+        Route::get('/total-report', 'TotalReportController@index')->name('admin.reports.total');
+        Route::post('/total-report', 'TotalReportController@generateReport')->name('admin.reports.total.generate');
+
+    });
 });
 
 Auth::routes();

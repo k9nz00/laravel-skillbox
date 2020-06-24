@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\UpdatePost;
 use App\Models\Interfaces\Contentable;
 use App\Models\Traits\Contentable as ContentableTrait;
 use App\User;
@@ -65,6 +66,8 @@ class Post extends Model implements Contentable
                 'before'=> json_encode($before),
                 'after'=> json_encode($after),
             ]);
+
+            event(new UpdatePost($post));
         });
     }
 
@@ -162,11 +165,6 @@ class Post extends Model implements Contentable
     public function scopeGetLastPublishedArticles()
     {
         return static::wherePublish(1)->latest();
-    }
-
-    public function getClass()
-    {
-        return get_called_class();
     }
 
     public function history()
