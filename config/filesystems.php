@@ -58,6 +58,11 @@ return [
             'root' => storage_path('reports'),
         ],
 
+        'totalReports' => [
+            'driver' => 'local',
+            'root' => storage_path('reports/totalReports'),
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

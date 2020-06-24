@@ -100,10 +100,11 @@ class TotalJob implements ShouldQueue
         $sheet->fromArray($data);
 
         $writer = new Xlsx($spreadsheet);
-        $pathToReport = 'reports/totalReports/report' . date('_Y_m_d_H:i') . '.xlsx';
-        $writer->save(storage_path($pathToReport));
+        $totalReportFileName = 'report' . date('_Y_m_d_H:i') . '.xlsx';
+        $reportsPath = Storage::disk('totalReports')->getDriver()->getAdapter()->getPathPrefix();
+        $writer->save($reportsPath . $totalReportFileName);
 
-        return $this->getPathToReport($pathToReport);
+        return $this->getPathToReport($totalReportFileName);
     }
 
     /**
@@ -126,7 +127,7 @@ class TotalJob implements ShouldQueue
      */
     public function getPathToReport($pathToReport): string
     {
-        if (Storage::disk('root')->exists($pathToReport)) {
+        if (Storage::disk('totalReports')->exists($pathToReport)) {
             return storage_path($pathToReport);
         } else {
             throw new \Exception('Файла по адресу ' . $pathToReport . ' не существует');
