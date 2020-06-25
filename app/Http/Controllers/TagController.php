@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tag;
+use Cache;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\View\View;
 
@@ -20,42 +21,46 @@ class TagController extends Controller
      */
     public function index(Tag $tag)
     {
-        $items = $tag
-            ->load([
-                'posts' => function ($query) {
-                    return $query->where('publish', '=', 1);
-                },
-                'news',
-            ]);
+        $dataForRender = Cache::tags([Tag::CONTENT, Tag::CACHE_TAGS_TAG, 'tag|' . $tag->id])
+            ->remember('tag|' . $tag->id, 3600, function () use ($tag) {
 
-        $tagName = $tag->name;
-        $posts = $items->posts->toArray();
-        $news = $items->news->toArray();
+                $items = $tag
+                    ->load([
+                        'posts' => function ($query) {
+                            return $query->where('publish', '=', 1);
+                        },
+                        'news',
+                    ]);
 
-        foreach ($posts as &$post)
-        {
-            $post['type'] = 'posts';
-        }
-        foreach ($news as &$newsItem)
-        {
-            $newsItem['type'] = 'news';
-        }
+                $tagName = $tag->name;
+                $posts = $items->posts->toArray();
+                $news = $items->news->toArray();
 
-        $items = array_merge($posts, $news);
-        $perPage = config('paginate.perPage');
+                foreach ($posts as &$post) {
+                    $post['type'] = 'posts';
+                }
+                foreach ($news as &$newsItem) {
+                    $newsItem['type'] = 'news';
+                }
 
-        $offset = null;
-        if (isset($_GET['page'])){
-            $offset = ($_GET['page'] -1) * $perPage;
-        } else {
-            $offset = null;
-        }
+                $items = array_merge($posts, $news);
+                $perPage = config('paginate.perPage');
 
-        $total = count($items);
-        $items = array_slice($items, $offset, $perPage);
-        $items = new LengthAwarePaginator($items, $total, $perPage);
-        $items->withPath('/posts/tags/'.$tag->name);
+                $offset = null;
+                if (isset($_GET['page'])) {
+                    $offset = ($_GET['page'] - 1) * $perPage;
+                } else {
+                    $offset = null;
+                }
 
-        return view('tag.list', compact('tagName', 'items'));
+                $total = count($items);
+                $items = array_slice($items, $offset, $perPage);
+                $items = new LengthAwarePaginator($items, $total, $perPage);
+                $items->withPath('/posts/tags/' . $tag->name);
+
+                return ['tagName' => $tagName, 'items' => $items];
+            });
+
+        return view('tag.list', ['tagName' => $dataForRender['tagName'], 'items' => $dataForRender['items']]);
     }
 }

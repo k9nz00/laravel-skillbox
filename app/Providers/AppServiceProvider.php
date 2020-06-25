@@ -2,7 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Interfaces\Contentable;
+use App\Models\News;
+use App\Models\Post;
 use App\Models\Tag;
+use Cache;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,7 +30,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         view()->composer('layouts.layoutsChunk.aside', function (View $view) {
-          $view->with('tagsCloud', Tag::getTagsCloud());
+            $usedTags = Cache::tags([Contentable::CONTENT, Post::CACHE_TAGS_POSTS, News::CACHE_KEY_NEWS])
+                ->remember('usedTags', 3600, function () {
+                    return Tag::getTagsCloud();
+                });
+            $view->with('tagsCloud', $usedTags);
         });
     }
 }

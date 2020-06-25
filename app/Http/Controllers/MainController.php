@@ -8,6 +8,7 @@ use App\Models\News;
 use App\Models\Post;
 use App\Models\Tag;
 use App\User;
+use Cache;
 use DB;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -79,46 +80,111 @@ class MainController extends Controller
      */
     public function statistic()
     {
-        $countPosts = Post::count(); //общее количество статей
-        $countNews = News::count(); //общее количество новостей
-        $userHaveMaxPosts = User::whereHas('posts')->withCount('posts')->orderByDesc('posts_count')->first()->name; //имя юзера с максимальным кол-вом статей
-        $maxLengthPost = DB::table('posts') //самая длинная сатья
-        ->selectRaw('LENGTH(body) as length, title, slug')
-            ->orderByDesc('length')
-            ->first();
-        $minLengthPost = DB::table('posts') //самая короткая статья
-        ->selectRaw('LENGTH(body) as length, title, slug')
-            ->orderBy('length')
-            ->first();
-        $postHasMaximumChanges = Post::whereHas('history')->withCount('history')->orderByDesc('history_count')->first(['*']); //самая часто изменяемая статья
-        $postHasMaximumComments = Post::whereHas('comments')->withCount('comments')->orderByDesc('comments_count')->first(['*']); //самая комментируемая статья
+        $hourLiveTime = 3600;
+        $dayLiveTime = 3600 * 24;
+
+        //общее количество статей
+        $countPosts = Cache::tags([Post::CACHE_TAGS_POSTS])
+            ->remember('countPosts', $hourLiveTime, function () {
+                return Post::count();
+            });
+
+        //общее количество новостей
+        $countNews = Cache::tags([News::CACHE_TAGS_NEWS])
+            ->remember('countPosts', $hourLiveTime, function () {
+                return News::count();
+            });
+
+        //имя юзера с максимальным кол-вом статей
+        $userHaveMaxPosts = Cache::tags([Post::CACHE_TAGS_POSTS, 'user'])
+            ->remember('userHaveMaxPosts', $hourLiveTime, function () {
+                return User::whereHas('posts')
+                    ->withCount('posts')
+                    ->orderByDesc('posts_count')
+                    ->first()
+                    ->name;
+            });
+
+        //самая длинная сатья
+        $maxLengthPost = Cache::tags([Post::CACHE_TAGS_POSTS])
+            ->remember('maxLengthPost', $dayLiveTime, function () {
+                return DB::table('posts')
+                    ->selectRaw('LENGTH(body) as length, title, slug')
+                    ->orderByDesc('length')
+                    ->first();
+            });
+
+        //самая короткая статья
+        $minLengthPost = Cache::tags([Post::CACHE_TAGS_POSTS])
+            ->remember('minLengthPost', $dayLiveTime, function () {
+                return DB::table('posts')
+                    ->selectRaw('LENGTH(body) as length, title, slug')
+                    ->orderBy('length')
+                    ->first();
+            });
+
+        //самая часто изменяемая статья
+        $postHasMaximumChanges = Cache::tags([Post::CACHE_TAGS_POSTS])
+            ->remember('postHasMaximumChanges', $dayLiveTime, function () {
+                return Post::whereHas('history')
+                    ->withCount('history')
+                    ->orderByDesc('history_count')
+                    ->first(['*']);
+            });
+
+        //самая комментируемая статья
+        $postHasMaximumComments = Cache::tags([Post::CACHE_TAGS_POSTS])
+            ->remember('postHasMaximumComments', $dayLiveTime, function () {
+                return Post::whereHas('comments')->withCount('comments')->orderByDesc('comments_count')->first(['*']);
+            });
 
         /*
          * Подсчет работает, но:
          * 1 - ->get(['posts_count']) для подходящмх моделей выбираются все поля, а не указанные в get
-         * 2-  Михаил, поясните, пожалуйста, какой способ эффективней - этот (при условии выборки только нужных полей) или тот, который ниже (105-106 строчка)
+         * 2-  Способ, который закоментирован ниже тоже работает. Однако,
+         * Подсчет отрабатывает как надо, но читабельность кода хромает сильно (по крайней мере для меня)
+         * поэтому меня он не устраивает
          *
-        $activeUsers = User::has('posts', '>', 1)->withCount('posts')->get(['posts_count']);
-        $averageCountPostsOfActiveUser = $activeUsers->avg('posts_count');
-        */
-
-        //Подсчет отрабатывает как надо, но читабельность кода хромает сильно (по крайней мере для меня)
-        //поэтому меня он не устраивает
         $activeUsers = User::has('posts', '>', 1)->withCount('posts');
         $averageCountPostsOfActiveUser = DB::table(DB::raw("({$activeUsers->toSql()}) as activeUsers"))->average('posts_count');
+        */
 
-        $usersCount = User::count();
+        //Средние количество статей у “активных” пользователей
+        $averageCountPostsOfActiveUser = Cache::tags([Post::CACHE_TAGS_POSTS, 'user'])
+            ->remember('averageCountPostsOfActiveUser', $dayLiveTime, function () {
 
-        $tagsCount = Tag::count(); //количемтво тегов
-        $mostPopularTagWithPosts = Tag::whereHas('posts') //самый популярный тег среди статей
-        ->withCount('posts')
-            ->orderByDesc('posts_count')
-            ->first();
+                $activeUsers = User::has('posts', '>', 1)->withCount('posts')->get(['posts_count']);
+                return $activeUsers->avg('posts_count');
+            });
+
+        //Количество зарегистрированных пользователей на сайте
+        $countUsers = Cache::tags(['users', 'user'])
+            ->remember('usersCount', $hourLiveTime, function () {
+                return User::count();
+            });
+
+        //количемтво тегов на сайте, у которых есть статьи и/или новости
+        $countTags = Cache::tags([Tag::CACHE_TAGS_TAG, Tag::CONTENT])
+            ->remember('countUsers', $hourLiveTime, function () {
+                return Tag::has('posts')
+                    ->orHas('news')
+                    ->count();
+            });
+
+        //самый популярный тег среди статей
+        $mostPopularTagWithPosts = Cache::tags([Post::CACHE_TAGS_POSTS, Post::CONTENT])
+            ->remember('mostPopularTagWithPosts', $dayLiveTime, function () {
+                return Tag::whereHas('posts')
+                    ->withCount('posts')
+                    ->orderByDesc('posts_count')
+                    ->first();
+            });
 
         $statistics = [
             'countPosts' => $countPosts,
             'countNews' => $countNews,
             'author' => $userHaveMaxPosts,
+            'countUsers' => $countUsers,
             'maxLengthPost' => [
                 'title' => $maxLengthPost->title,
                 'slug' => $maxLengthPost->slug,
@@ -140,7 +206,7 @@ class MainController extends Controller
                 'slug' => $postHasMaximumComments->slug,
                 'count' => $postHasMaximumComments->comments_count,
             ],
-            'tagsCount' => $tagsCount,
+            'tagsCount' => $countTags,
             'mostPopularTagWithPosts' => [
                 'name' => $mostPopularTagWithPosts->name,
                 'count' => $mostPopularTagWithPosts->posts_count,

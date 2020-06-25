@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Interfaces\Contentable;
 use App\Models\Traits\Contentable as ContentableTrait;
 use App\User;
+use Cache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -52,12 +53,33 @@ class News extends Model implements Contentable
     use SoftDeletes;
     use ContentableTrait;
 
+    const CACHE_TAGS_NEWS = 'news';
+    const CACHE_KEY_NEWS = 'news';
+
     protected $guarded = [];
 
     public function getRouteKeyName()
     {
         return 'slug';
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function () {
+            Cache::tags([static::CACHE_TAGS_NEWS])->flush();
+        });
+
+        static::updating(function (News $news) {
+            Cache::tags([static::CACHE_TAGS_NEWS, 'newsItem|' . $news->id])->flush();
+        });
+
+        static::deleting(function (News $news) {
+            Cache::tags([static::CACHE_TAGS_NEWS, 'newsItem|' . $news->id])->flush();
+        });
+    }
+
 
     /**
      * Установка полиморфной связи с таблицей тегов

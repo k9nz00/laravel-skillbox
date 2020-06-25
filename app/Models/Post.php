@@ -8,6 +8,7 @@ use App\Models\Traits\Contentable as ContentableTrait;
 use App\User;
 use Arr;
 use Auth;
+use Cache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -53,9 +54,16 @@ class Post extends Model implements Contentable
 {
     use ContentableTrait;
 
+    const CACHE_TAGS_POSTS = 'posts';
+    const CACHE_KEY_POSTS = 'posts';
+
     protected static function boot()
     {
         parent::boot();
+
+        static::creating(function () {
+            Cache::tags(static::CACHE_TAGS_POSTS)->flush();
+        });
 
         static::updating(function (Post $post) {
 
@@ -63,11 +71,17 @@ class Post extends Model implements Contentable
             unset($after['publish']);
             $before = Arr::only($post->fresh()->toArray(), array_keys($after));
             $post->history()->attach(Auth::id(), [
-                'before'=> json_encode($before),
-                'after'=> json_encode($after),
+                'before' => json_encode($before),
+                'after' => json_encode($after),
             ]);
 
             event(new UpdatePost($post));
+
+            Cache::tags([static::CACHE_TAGS_POSTS, 'post|' . $post->id])->flush();
+        });
+
+        static::deleting(function (Post $post) {
+            Cache::tags([static::CACHE_TAGS_POSTS, 'post|' . $post->id])->flush();
         });
     }
 

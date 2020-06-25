@@ -6,11 +6,13 @@ use App\Helpers\MessageHelpers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Post\StorePostRequest;
 use App\Http\Requests\Post\UpdatePostRequest;
+use App\Models\Interfaces\Contentable;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Notifications\PostNotafication\ChangePostStateNotification;
 use App\Services\PostServices;
 use App\User;
+use Cache;
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
@@ -40,10 +42,12 @@ class PostController extends Controller
      */
     public function index()
     {
-
-        $posts = Post::getLastPublishedArticlesWithTags()
-            ->paginate(config('paginate.perPage'), ['id', 'title', 'slug', 'shortDescription', 'created_at'],
-                'postsPage');
+        $posts = Cache::tags([Post::CACHE_TAGS_POSTS, Post::CONTENT])
+            ->remember(Post::CACHE_KEY_POSTS, 3600 * 24, function () {
+                return Post::getLastPublishedArticlesWithTags()
+                    ->paginate(config('paginate.perPage'), ['id', 'title', 'slug', 'shortDescription', 'created_at'],
+                        'postsPage');
+            });
 
         return view('post.list', compact('posts'));
     }
@@ -56,7 +60,12 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        $post->takeCommentsWithOwners(['id', 'name', 'email']);
+        $post = Cache::tags(['post'])->remember('post|' . $post->id, 3600, function () use ($post) {
+            $post->takeCommentsWithOwners(['id', 'name', 'email']);
+            $post->load('history');
+            return $post;
+        });
+
         return view('post.show', compact('post'));
     }
 
