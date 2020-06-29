@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         view()->composer('layouts.layoutsChunk.aside', function (View $view) {
-            $usedTags = Cache::tags([Contentable::CONTENT, Post::CACHE_TAGS_POSTS, News::CACHE_KEY_NEWS])
+            $usedTags = Cache::tags([Contentable::CONTENT, Post::CACHE_TAGS, News::CACHE_KEY])
                 ->remember('usedTags', 3600, function () {
                     return Tag::getTagsCloud();
                 });

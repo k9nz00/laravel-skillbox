@@ -84,19 +84,19 @@ class MainController extends Controller
         $dayLiveTime = 3600 * 24;
 
         //общее количество статей
-        $countPosts = Cache::tags([Post::CACHE_TAGS_POSTS])
+        $countPosts = Cache::tags([Post::CACHE_TAGS])
             ->remember('countPosts', $hourLiveTime, function () {
                 return Post::count();
             });
 
         //общее количество новостей
-        $countNews = Cache::tags([News::CACHE_TAGS_NEWS])
+        $countNews = Cache::tags([News::CACHE_TAGS])
             ->remember('countPosts', $hourLiveTime, function () {
                 return News::count();
             });
 
         //имя юзера с максимальным кол-вом статей
-        $userHaveMaxPosts = Cache::tags([Post::CACHE_TAGS_POSTS, 'user'])
+        $userHaveMaxPosts = Cache::tags([Post::CACHE_TAGS, 'user'])
             ->remember('userHaveMaxPosts', $hourLiveTime, function () {
                 return User::whereHas('posts')
                     ->withCount('posts')
@@ -106,7 +106,7 @@ class MainController extends Controller
             });
 
         //самая длинная сатья
-        $maxLengthPost = Cache::tags([Post::CACHE_TAGS_POSTS])
+        $maxLengthPost = Cache::tags([Post::CACHE_TAGS])
             ->remember('maxLengthPost', $dayLiveTime, function () {
                 return DB::table('posts')
                     ->selectRaw('LENGTH(body) as length, title, slug')
@@ -115,7 +115,7 @@ class MainController extends Controller
             });
 
         //самая короткая статья
-        $minLengthPost = Cache::tags([Post::CACHE_TAGS_POSTS])
+        $minLengthPost = Cache::tags([Post::CACHE_TAGS])
             ->remember('minLengthPost', $dayLiveTime, function () {
                 return DB::table('posts')
                     ->selectRaw('LENGTH(body) as length, title, slug')
@@ -124,7 +124,7 @@ class MainController extends Controller
             });
 
         //самая часто изменяемая статья
-        $postHasMaximumChanges = Cache::tags([Post::CACHE_TAGS_POSTS])
+        $postHasMaximumChanges = Cache::tags([Post::CACHE_TAGS])
             ->remember('postHasMaximumChanges', $dayLiveTime, function () {
                 return Post::whereHas('history')
                     ->withCount('history')
@@ -133,7 +133,7 @@ class MainController extends Controller
             });
 
         //самая комментируемая статья
-        $postHasMaximumComments = Cache::tags([Post::CACHE_TAGS_POSTS])
+        $postHasMaximumComments = Cache::tags([Post::CACHE_TAGS])
             ->remember('postHasMaximumComments', $dayLiveTime, function () {
                 return Post::whereHas('comments')->withCount('comments')->orderByDesc('comments_count')->first(['*']);
             });
@@ -150,7 +150,7 @@ class MainController extends Controller
         */
 
         //Средние количество статей у “активных” пользователей
-        $averageCountPostsOfActiveUser = Cache::tags([Post::CACHE_TAGS_POSTS, 'user'])
+        $averageCountPostsOfActiveUser = Cache::tags([Post::CACHE_TAGS, 'user'])
             ->remember('averageCountPostsOfActiveUser', $dayLiveTime, function () {
 
                 $activeUsers = User::has('posts', '>', 1)->withCount('posts')->get(['posts_count']);
@@ -164,7 +164,7 @@ class MainController extends Controller
             });
 
         //количемтво тегов на сайте, у которых есть статьи и/или новости
-        $countTags = Cache::tags([Tag::CACHE_TAGS_TAG, Tag::CONTENT])
+        $countTags = Cache::tags([Tag::CACHE_TAGS, Tag::CONTENT])
             ->remember('countUsers', $hourLiveTime, function () {
                 return Tag::has('posts')
                     ->orHas('news')
@@ -172,7 +172,7 @@ class MainController extends Controller
             });
 
         //самый популярный тег среди статей
-        $mostPopularTagWithPosts = Cache::tags([Post::CACHE_TAGS_POSTS, Post::CONTENT])
+        $mostPopularTagWithPosts = Cache::tags([Post::CACHE_TAGS, Post::CONTENT])
             ->remember('mostPopularTagWithPosts', $dayLiveTime, function () {
                 return Tag::whereHas('posts')
                     ->withCount('posts')

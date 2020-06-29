@@ -21,8 +21,8 @@ class NewsController extends Controller
     {
 
         //написать метод выборки данных и разместить его в модели
-        $news = Cache::tags([News::CACHE_TAGS_NEWS, News::CONTENT])
-            ->remember(News::CACHE_TAGS_NEWS, 3600 * 24, function () {
+        $news = Cache::tags([News::CACHE_TAGS, News::CONTENT])
+            ->remember(News::CACHE_TAGS, 3600 * 24, function () {
                 return News::with(['tags', 'owner'])
                     ->latest()
                     ->paginate(config('paginate.perPage'), ['*'], 'newsPage');

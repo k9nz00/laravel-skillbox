@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Interfaces\Contentable;
+use App\Models\Traits\CacheableTrait;
 use App\Models\Traits\Contentable as ContentableTrait;
 use App\User;
 use Cache;
@@ -52,9 +53,10 @@ class News extends Model implements Contentable
 {
     use SoftDeletes;
     use ContentableTrait;
+    use CacheableTrait;
 
-    const CACHE_TAGS_NEWS = 'news';
-    const CACHE_KEY_NEWS = 'news';
+    const CACHE_TAGS = 'news';
+    const CACHE_KEY = 'news';
 
     protected $guarded = [];
 
@@ -62,24 +64,6 @@ class News extends Model implements Contentable
     {
         return 'slug';
     }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function () {
-            Cache::tags([static::CACHE_TAGS_NEWS])->flush();
-        });
-
-        static::updating(function (News $news) {
-            Cache::tags([static::CACHE_TAGS_NEWS, 'newsItem|' . $news->id])->flush();
-        });
-
-        static::deleting(function (News $news) {
-            Cache::tags([static::CACHE_TAGS_NEWS, 'newsItem|' . $news->id])->flush();
-        });
-    }
-
 
     /**
      * Установка полиморфной связи с таблицей тегов

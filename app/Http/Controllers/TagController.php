@@ -21,7 +21,7 @@ class TagController extends Controller
      */
     public function index(Tag $tag)
     {
-        $dataForRender = Cache::tags([Tag::CONTENT, Tag::CACHE_TAGS_TAG, 'tag|' . $tag->id])
+        $dataForRender = Cache::tags([Tag::CONTENT, Tag::CACHE_TAGS, 'tag|' . $tag->id])
             ->remember('tag|' . $tag->id, 3600, function () use ($tag) {
 
                 $items = $tag

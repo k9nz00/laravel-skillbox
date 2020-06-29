@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Interfaces\Contentable;
+use App\Models\Traits\CacheableTrait;
 use Cache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -31,7 +32,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  */
 class Tag extends Model implements Contentable
 {
-    const CACHE_TAGS_TAG = 'tags';
+    use CacheableTrait;
+
+    const CACHE_TAGS = 'tags';
 
     /**
      * Защита поля защиненные от массового заполнения
@@ -49,24 +52,6 @@ class Tag extends Model implements Contentable
     {
         return 'name';
     }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function () {
-            Cache::tags([static::CACHE_TAGS_TAG])->flush();
-        });
-
-        static::updating(function (Tag $tag) {
-            Cache::tags([static::CACHE_TAGS_TAG, 'tag|' . $tag->id])->flush();
-        });
-
-        static::deleting(function (Tag $tag) {
-            Cache::tags([static::CACHE_TAGS_TAG, 'tag|' . $tag->id])->flush();
-        });
-    }
-
 
     /**
      * Установка полиморфной связи с таблицей постов

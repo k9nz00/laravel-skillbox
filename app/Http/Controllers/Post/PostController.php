@@ -42,8 +42,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Cache::tags([Post::CACHE_TAGS_POSTS, Post::CONTENT])
-            ->remember(Post::CACHE_KEY_POSTS, 3600 * 24, function () {
+        $posts = Cache::tags([Post::CACHE_TAGS, Post::CONTENT])
+            ->remember(Post::CACHE_KEY, 3600 * 24, function () {
                 return Post::getLastPublishedArticlesWithTags()
                     ->paginate(config('paginate.perPage'), ['id', 'title', 'slug', 'shortDescription', 'created_at'],
                         'postsPage');

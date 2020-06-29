@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Events\UpdatePost;
 use App\Models\Interfaces\Contentable;
+use App\Models\Traits\CacheableTrait;
 use App\Models\Traits\Contentable as ContentableTrait;
 use App\User;
 use Arr;
@@ -53,17 +54,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Post extends Model implements Contentable
 {
     use ContentableTrait;
+    use CacheableTrait;
 
-    const CACHE_TAGS_POSTS = 'posts';
-    const CACHE_KEY_POSTS = 'posts';
+    const CACHE_TAGS = 'posts';
+    const CACHE_KEY = 'posts';
 
     protected static function boot()
     {
         parent::boot();
-
-        static::creating(function () {
-            Cache::tags(static::CACHE_TAGS_POSTS)->flush();
-        });
 
         static::updating(function (Post $post) {
 
@@ -76,12 +74,6 @@ class Post extends Model implements Contentable
             ]);
 
             event(new UpdatePost($post));
-
-            Cache::tags([static::CACHE_TAGS_POSTS, 'post|' . $post->id])->flush();
-        });
-
-        static::deleting(function (Post $post) {
-            Cache::tags([static::CACHE_TAGS_POSTS, 'post|' . $post->id])->flush();
         });
     }
 
