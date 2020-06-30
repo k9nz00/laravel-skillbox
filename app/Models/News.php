@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Models\Interfaces\Contentable;
+use App\Models\Traits\CacheableTrait;
 use App\Models\Traits\Contentable as ContentableTrait;
 use App\User;
+use Cache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -51,6 +53,10 @@ class News extends Model implements Contentable
 {
     use SoftDeletes;
     use ContentableTrait;
+    use CacheableTrait;
+
+    const CACHE_TAGS = 'news';
+    const CACHE_KEY = 'news';
 
     protected $guarded = [];
 

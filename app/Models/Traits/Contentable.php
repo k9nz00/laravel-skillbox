@@ -26,6 +26,9 @@ trait Contentable
                 ]);
                 return $query->latest();
             },
+            'tags' => function ($query) {
+                return $query->get();
+            },
         ]);
 
         return $this;

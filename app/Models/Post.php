@@ -4,10 +4,12 @@ namespace App\Models;
 
 use App\Events\UpdatePost;
 use App\Models\Interfaces\Contentable;
+use App\Models\Traits\CacheableTrait;
 use App\Models\Traits\Contentable as ContentableTrait;
 use App\User;
 use Arr;
 use Auth;
+use Cache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -52,6 +54,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Post extends Model implements Contentable
 {
     use ContentableTrait;
+    use CacheableTrait;
+
+    const CACHE_TAGS = 'posts';
+    const CACHE_KEY = 'posts';
 
     protected static function boot()
     {
@@ -63,8 +69,8 @@ class Post extends Model implements Contentable
             unset($after['publish']);
             $before = Arr::only($post->fresh()->toArray(), array_keys($after));
             $post->history()->attach(Auth::id(), [
-                'before'=> json_encode($before),
-                'after'=> json_encode($after),
+                'before' => json_encode($before),
+                'after' => json_encode($after),
             ]);
 
             event(new UpdatePost($post));

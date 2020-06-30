@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\Interfaces\Contentable;
+use App\Models\Traits\CacheableTrait;
+use Cache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -30,6 +32,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  */
 class Tag extends Model implements Contentable
 {
+    use CacheableTrait;
+
+    const CACHE_TAGS = 'tags';
+
     /**
      * Защита поля защиненные от массового заполнения
      *
@@ -74,9 +80,13 @@ class Tag extends Model implements Contentable
      */
     public static function getTagsCloud()
     {
-        $tags = (new static)->whereHas('posts', function ($query) {
-            $query->where('publish', '=', '1');
-        })->get();
+        $tags = (new static)
+            ->whereHas('posts', function ($query) {
+                $query
+                    ->where('publish', '=', '1');
+            })
+            ->orHas('news')
+            ->get();
         return $tags;
     }
 }
